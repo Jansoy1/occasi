@@ -1,0 +1,620 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5"/>
+<title>Preview — Occasi</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;500;600;700&family=Cinzel:wght@400;600&family=Dancing+Script:wght@600&family=Great+Vibes&family=Bebas+Neue&family=Pacifico&family=Abril+Fatface&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:#1a0a14;min-height:100vh}
+
+/* ── PREVIEW BAR ── */
+.preview-bar{position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(26,10,20,.95);backdrop-filter:blur(16px);border-bottom:1px solid #5d2540;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.pb-info{color:#fff5ec;display:flex;align-items:center;gap:10px;flex:1;min-width:0}
+.pb-back{font-size:13px;color:#fff5ec;text-decoration:none;display:inline-flex;align-items:center;gap:5px;font-weight:500;padding:6px 10px;border-radius:6px;background:rgba(255,255,255,.06);transition:background .2s;flex-shrink:0}
+.pb-back:hover{background:rgba(255,255,255,.12)}
+.pb-name{font-family:'Playfair Display',serif;font-size:14px;font-style:italic;color:#fff5ec;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pb-cat{font-size:10px;color:#a08a78;text-transform:uppercase;letter-spacing:.1em;font-weight:600}
+.pb-actions{display:flex;gap:6px;flex-shrink:0}
+.pb-btn{padding:8px 14px;border-radius:8px;border:none;font-size:12px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;text-decoration:none;letter-spacing:.04em;display:inline-flex;align-items:center}
+.pb-btn-grad{background:linear-gradient(135deg,#ff6b9d,#d4a574);color:#1a0a14;box-shadow:0 4px 12px rgba(255,107,157,.3)}
+.pb-btn-grad:hover{transform:translateY(-1px)}
+.pb-btn-ghost{background:rgba(255,255,255,.08);color:#fff5ec;border:1px solid rgba(255,255,255,.15)}
+.pb-btn-ghost:hover{background:rgba(255,255,255,.14)}
+
+/* ── PREVIEW SCREEN ── */
+.preview-screen{padding-top:60px;min-height:100vh}
+
+/* Each design fills the whole screen with its own theme */
+.design{min-height:calc(100vh - 60px);padding:50px 24px;display:flex;align-items:center;justify-content:center}
+.design-card{max-width:520px;width:100%;text-align:center;padding:40px 32px;border-radius:24px;box-shadow:0 30px 80px rgba(0,0,0,.4)}
+
+/* Common card sub-elements */
+.dc-eyebrow{font-size:11px;font-weight:700;letter-spacing:.25em;text-transform:uppercase;margin-bottom:18px;opacity:.85}
+.dc-names{font-size:clamp(36px,8vw,52px);font-weight:700;line-height:1;margin-bottom:10px;letter-spacing:-.01em}
+.dc-amp{font-size:clamp(24px,5vw,34px);display:block;margin:8px 0;font-style:italic;opacity:.8}
+.dc-tagline{font-size:14px;line-height:1.6;margin:18px auto;max-width:380px;opacity:.85}
+.dc-divider{height:1px;width:60px;margin:18px auto;opacity:.4}
+.dc-detail{font-size:13px;letter-spacing:.08em;text-transform:uppercase;font-weight:600;margin-bottom:6px;opacity:.7}
+.dc-bigdate{font-family:'Playfair Display',serif;font-size:clamp(28px,6vw,40px);font-weight:700;line-height:1;margin:6px 0 4px}
+.dc-venue{font-size:13px;opacity:.75;margin-top:14px}
+.dc-rsvp{margin-top:24px;padding:12px 28px;border-radius:24px;font-size:12px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;display:inline-block;cursor:pointer;border:none;font-family:'Inter',sans-serif}
+.dc-photo{width:100%;height:180px;background-size:cover;background-position:center;border-radius:14px;margin-bottom:24px;display:flex;align-items:center;justify-content:center;font-size:48px;opacity:.85}
+
+/* ╔══════════════════════════════════╗
+   ║   60 UNIQUE DESIGN STYLES        ║
+   ╚══════════════════════════════════╝ */
+
+/* ── WEDDINGS (10) ── */
+.d-garden{background:linear-gradient(135deg,#f5e8d4,#d4c0a8)}
+.d-garden .design-card{background:#fdf8ec;color:#5a4030;font-family:'Playfair Display',serif;border:2px solid #b8a070}
+.d-garden .dc-photo{background:linear-gradient(135deg,#a8b890,#8a9c70)}
+.d-garden .dc-divider{background:#5a4030}
+.d-garden .dc-rsvp{background:#5a4030;color:#fdf8ec}
+
+.d-midnight{background:linear-gradient(135deg,#0a0a18,#1a1428)}
+.d-midnight .design-card{background:#0d0d1a;color:#d4a574;font-family:'Cinzel',serif;border:2px solid #d4a574;box-shadow:0 0 60px rgba(212,165,116,.2)}
+.d-midnight .dc-photo{background:linear-gradient(135deg,#1a1428,#3a2050)}
+.d-midnight .dc-divider{background:#d4a574}
+.d-midnight .dc-rsvp{background:#d4a574;color:#0a0a18}
+
+.d-coastal{background:linear-gradient(135deg,#cce4f0,#88b8d4)}
+.d-coastal .design-card{background:rgba(255,255,255,.85);color:#1a4a6c;font-family:'Inter',sans-serif;backdrop-filter:blur(8px)}
+.d-coastal .dc-photo{background:linear-gradient(135deg,#88b8d4,#5a98c0)}
+.d-coastal .dc-divider{background:#1a4a6c}
+.d-coastal .dc-rsvp{background:#1a4a6c;color:#fff}
+
+.d-rustic{background:linear-gradient(135deg,#3a2010,#5a3424)}
+.d-rustic .design-card{background:#5a3424;color:#e8c59a;font-family:'Dancing Script',cursive;border:2px solid #c89060}
+.d-rustic .dc-names{font-family:'Dancing Script',cursive}
+.d-rustic .dc-photo{background:linear-gradient(135deg,#7a4a30,#a06840)}
+.d-rustic .dc-divider{background:#c89060}
+.d-rustic .dc-rsvp{background:#c89060;color:#3a2010;font-family:'Inter',sans-serif}
+
+.d-confetti{background:linear-gradient(135deg,#ffd6ee,#ffa0c8)}
+.d-confetti .design-card{background:#fff;color:#a01c5c;font-family:'Pacifico',cursive;position:relative}
+.d-confetti .design-card::before{content:'🎊';position:absolute;top:10px;left:14px;font-size:24px}
+.d-confetti .design-card::after{content:'✨';position:absolute;bottom:10px;right:14px;font-size:24px}
+.d-confetti .dc-eyebrow{font-family:'Inter',sans-serif}
+.d-confetti .dc-photo{background:linear-gradient(135deg,#ffa0c8,#ff6090)}
+.d-confetti .dc-divider{background:#a01c5c}
+.d-confetti .dc-rsvp{background:#a01c5c;color:#fff;font-family:'Inter',sans-serif}
+
+.d-deco{background:linear-gradient(135deg,#1a1208,#3a2c10)}
+.d-deco .design-card{background:#1a1208;color:#d4b450;font-family:'Cinzel',serif;border:3px double #d4b450}
+.d-deco .dc-eyebrow{letter-spacing:.4em}
+.d-deco .dc-photo{background:linear-gradient(135deg,#3a2c10,#5a4218)}
+.d-deco .dc-divider{background:#d4b450;height:2px}
+.d-deco .dc-rsvp{background:transparent;color:#d4b450;border:2px solid #d4b450}
+
+.d-zen{background:#f8f6f0}
+.d-zen .design-card{background:#fff;color:#1a140a;font-family:'Playfair Display',serif;border-left:4px solid #8a1414}
+.d-zen .dc-eyebrow{color:#8a1414}
+.d-zen .dc-photo{background:#e8e4d8;color:#8a1414}
+.d-zen .dc-divider{background:#8a1414;width:30px}
+.d-zen .dc-rsvp{background:#8a1414;color:#fff}
+
+.d-love{background:linear-gradient(135deg,#1a0a2e,#3d1060);position:relative;overflow:hidden}
+.d-love::before{content:'💕💕💕';position:absolute;top:5%;left:10%;font-size:40px;opacity:.2}
+.d-love::after{content:'💍✨💝';position:absolute;bottom:5%;right:10%;font-size:40px;opacity:.2}
+.d-love .design-card{background:#1a0a2e;color:#e090d8;font-family:'Playfair Display',serif;border:1px solid #8060c0}
+.d-love .dc-photo{background:linear-gradient(135deg,#3d1060,#6020a0)}
+.d-love .dc-divider{background:#e090d8}
+.d-love .dc-rsvp{background:#e090d8;color:#1a0a2e}
+
+.d-fairy{background:linear-gradient(135deg,#f9e0c8,#e8b890)}
+.d-fairy .design-card{background:#fdf3e3;color:#6b3a2a;font-family:'Abril Fatface',serif}
+.d-fairy .dc-photo{background:linear-gradient(135deg,#d8a070,#b88050);border-radius:120px 120px 14px 14px}
+.d-fairy .dc-divider{background:#6b3a2a}
+.d-fairy .dc-rsvp{background:#6b3a2a;color:#fdf3e3;font-family:'Inter',sans-serif}
+
+.d-tropical{background:linear-gradient(135deg,#003322,#006644)}
+.d-tropical .design-card{background:#003322;color:#ffe836;font-family:'Pacifico',cursive;border:2px solid #ffe836}
+.d-tropical .design-card::before{content:'🌴';position:absolute;top:12px;left:16px;font-size:30px}
+.d-tropical .design-card::after{content:'🌺';position:absolute;bottom:12px;right:16px;font-size:30px}
+.d-tropical .dc-eyebrow{font-family:'Inter',sans-serif}
+.d-tropical .dc-photo{background:linear-gradient(135deg,#006644,#00a866)}
+.d-tropical .dc-divider{background:#ffe836}
+.d-tropical .dc-rsvp{background:#ffe836;color:#003322;font-family:'Inter',sans-serif}
+
+/* ── BIRTHDAYS (10) ── */
+.d-pastel{background:linear-gradient(135deg,#ffd6e0,#c8e0ff,#fff0c8)}
+.d-pastel .design-card{background:#fff;color:#7a3060;font-family:'Pacifico',cursive}
+.d-pastel .dc-eyebrow{font-family:'Inter',sans-serif}
+.d-pastel .dc-photo{background:linear-gradient(135deg,#ffd6e0,#c8e0ff,#fff0c8)}
+.d-pastel .dc-divider{background:#7a3060}
+.d-pastel .dc-rsvp{background:#7a3060;color:#fff;font-family:'Inter',sans-serif}
+
+.d-disco{background:linear-gradient(135deg,#1a0530,#5d1090)}
+.d-disco .design-card{background:#0a0218;color:#ffd700;font-family:'Bebas Neue',sans-serif;border:2px solid #ff00cc}
+.d-disco .dc-photo{background:radial-gradient(circle,#ff00cc 0%,#5d1090 50%,#0a0218 100%)}
+.d-disco .dc-divider{background:#ffd700}
+.d-disco .dc-rsvp{background:linear-gradient(135deg,#ff00cc,#ffd700);color:#0a0218}
+
+.d-tropop{background:linear-gradient(135deg,#00a86b,#ff6b35)}
+.d-tropop .design-card{background:#fff8a0;color:#1a4030;font-family:'Pacifico',cursive}
+.d-tropop .dc-eyebrow{font-family:'Inter',sans-serif}
+.d-tropop .dc-photo{background:linear-gradient(135deg,#00a86b,#ff6b35);font-size:60px}
+.d-tropop .dc-divider{background:#1a4030}
+.d-tropop .dc-rsvp{background:#ff6b35;color:#fff;font-family:'Inter',sans-serif}
+
+.d-blacktie{background:linear-gradient(135deg,#0a0a14,#2a2a3a)}
+.d-blacktie .design-card{background:#0a0a14;color:#e8a09a;font-family:'Playfair Display',serif;border:1px solid #e8a09a}
+.d-blacktie .dc-photo{background:linear-gradient(135deg,#1a1a2a,#3a3a4a)}
+.d-blacktie .dc-divider{background:#e8a09a}
+.d-blacktie .dc-rsvp{background:#e8a09a;color:#0a0a14}
+
+.d-confburst{background:linear-gradient(180deg,#fff,#fff0f8)}
+.d-confburst .design-card{background:#fff;color:#d4227a;font-family:'Inter',sans-serif;position:relative;overflow:hidden}
+.d-confburst .design-card::before{content:'🎉🎊✨🎈';position:absolute;top:10px;left:0;right:0;text-align:center;font-size:30px;opacity:.5}
+.d-confburst .dc-photo{background:radial-gradient(circle,#ffd0ec,#ff80c0)}
+.d-confburst .dc-divider{background:#d4227a}
+.d-confburst .dc-rsvp{background:#d4227a;color:#fff}
+
+.d-vintage{background:linear-gradient(135deg,#a0e0c8,#ff8a8a)}
+.d-vintage .design-card{background:#fff;color:#5a1010;font-family:'Bebas Neue',sans-serif;border:3px double #5a1010}
+.d-vintage .dc-photo{background:repeating-linear-gradient(45deg,#ff8a8a,#ff8a8a 10px,#fff 10px,#fff 20px)}
+.d-vintage .dc-divider{background:#5a1010}
+.d-vintage .dc-rsvp{background:#5a1010;color:#fff}
+
+.d-bash{background:linear-gradient(135deg,#ff3030,#ffd000)}
+.d-bash .design-card{background:#fff;color:#3a0808;font-family:'Bebas Neue',sans-serif;border:4px solid #ff3030}
+.d-bash .dc-eyebrow{color:#ff3030}
+.d-bash .dc-photo{background:repeating-linear-gradient(45deg,#ff3030,#ff3030 20px,#ffd000 20px,#ffd000 40px)}
+.d-bash .dc-divider{background:#ff3030}
+.d-bash .dc-rsvp{background:#ff3030;color:#fff}
+
+.d-ombre{background:linear-gradient(135deg,#ff9966,#ff5577,#a04088)}
+.d-ombre .design-card{background:linear-gradient(135deg,#fff8e8,#fff0e0);color:#a04088;font-family:'Playfair Display',serif}
+.d-ombre .dc-photo{background:linear-gradient(135deg,#ff9966,#ff5577,#a04088)}
+.d-ombre .dc-divider{background:#a04088}
+.d-ombre .dc-rsvp{background:linear-gradient(135deg,#ff9966,#ff5577);color:#fff}
+
+.d-kids{background:linear-gradient(135deg,#5588ff,#ffaa00,#ff6688)}
+.d-kids .design-card{background:#fff;color:#1a3a8a;font-family:'Pacifico',cursive;border:5px solid #ffaa00}
+.d-kids .dc-photo{background:linear-gradient(135deg,#5588ff,#ffaa00,#ff6688);font-size:60px}
+.d-kids .dc-eyebrow{font-family:'Inter',sans-serif}
+.d-kids .dc-divider{background:#ffaa00}
+.d-kids .dc-rsvp{background:#ff6688;color:#fff;font-family:'Inter',sans-serif}
+
+.d-milestone{background:linear-gradient(135deg,#000,#1a1a1a)}
+.d-milestone .design-card{background:#000;color:#d4af37;font-family:'Cinzel',serif;border:3px double #d4af37}
+.d-milestone .dc-photo{background:linear-gradient(135deg,#1a1a1a,#3a2a08);font-size:50px;color:#d4af37}
+.d-milestone .dc-divider{background:#d4af37}
+.d-milestone .dc-rsvp{background:#d4af37;color:#000}
+
+/* ── CORPORATE (10) ── */
+.d-modern{background:linear-gradient(135deg,#fff,#f0f0f4)}
+.d-modern .design-card{background:#fff;color:#1a1a2a;font-family:'Inter',sans-serif;border-left:6px solid #1a1a2a}
+.d-modern .dc-eyebrow{color:#1a1a2a;letter-spacing:.3em}
+.d-modern .dc-photo{background:#1a1a2a}
+.d-modern .dc-divider{background:#1a1a2a;width:40px}
+.d-modern .dc-rsvp{background:#1a1a2a;color:#fff}
+
+.d-tech{background:linear-gradient(135deg,#0a1428,#1a3050)}
+.d-tech .design-card{background:#0a1428;color:#00d4ff;font-family:'Inter',sans-serif;border:1px solid #00d4ff;clip-path:polygon(0 0,calc(100% - 16px) 0,100% 16px,100% 100%,16px 100%,0 calc(100% - 16px))}
+.d-tech .dc-photo{background:linear-gradient(135deg,#1a3050,#2a4070)}
+.d-tech .dc-divider{background:#00d4ff}
+.d-tech .dc-rsvp{background:#00d4ff;color:#0a1428}
+
+.d-exec{background:linear-gradient(135deg,#0a1a3a,#1a2a4a)}
+.d-exec .design-card{background:#0a1a3a;color:#d4a574;font-family:'Cinzel',serif;border:2px solid #d4a574}
+.d-exec .dc-photo{background:linear-gradient(135deg,#1a2a4a,#2a3a5a)}
+.d-exec .dc-divider{background:#d4a574}
+.d-exec .dc-rsvp{background:#d4a574;color:#0a1a3a}
+
+.d-conf{background:linear-gradient(135deg,#5a1414,#8a2424)}
+.d-conf .design-card{background:#f5e8d4;color:#5a1414;font-family:'Playfair Display',serif;border:2px solid #5a1414}
+.d-conf .dc-photo{background:linear-gradient(135deg,#5a1414,#7a1c1c)}
+.d-conf .dc-divider{background:#5a1414}
+.d-conf .dc-rsvp{background:#5a1414;color:#f5e8d4}
+
+.d-startup{background:linear-gradient(135deg,#fff,#e0f8f4)}
+.d-startup .design-card{background:#fff;color:#0a8a7a;font-family:'Inter',sans-serif;border-radius:20px}
+.d-startup .dc-eyebrow{color:#0a8a7a}
+.d-startup .dc-photo{background:linear-gradient(135deg,#0a8a7a,#10b8a4)}
+.d-startup .dc-divider{background:#0a8a7a}
+.d-startup .dc-rsvp{background:#0a8a7a;color:#fff;border-radius:30px}
+
+.d-gala{background:linear-gradient(135deg,#0a0a0a,#2a2a2a)}
+.d-gala .design-card{background:#0a0a0a;color:#c0c0d0;font-family:'Cinzel',serif;border:2px solid #c0c0d0;box-shadow:0 0 40px rgba(192,192,208,.15)}
+.d-gala .dc-photo{background:linear-gradient(135deg,#1a1a1a,#3a3a3a)}
+.d-gala .dc-divider{background:#c0c0d0}
+.d-gala .dc-rsvp{background:#c0c0d0;color:#0a0a0a}
+
+.d-awards{background:linear-gradient(135deg,#2a0a4a,#4a1a7a)}
+.d-awards .design-card{background:#2a0a4a;color:#ffd700;font-family:'Cinzel',serif;border:3px double #ffd700}
+.d-awards .dc-photo{background:linear-gradient(135deg,#4a1a7a,#6a2a9a);font-size:60px}
+.d-awards .dc-divider{background:#ffd700}
+.d-awards .dc-rsvp{background:#ffd700;color:#2a0a4a}
+
+.d-launch{background:linear-gradient(135deg,#0a0a14,#1a0a24)}
+.d-launch .design-card{background:#0a0a14;color:#ff0080;font-family:'Bebas Neue',sans-serif;border-left:6px solid #ff0080}
+.d-launch .dc-photo{background:linear-gradient(135deg,#1a0a24,#3a0a44)}
+.d-launch .dc-divider{background:#ff0080}
+.d-launch .dc-rsvp{background:#ff0080;color:#fff}
+
+.d-network{background:linear-gradient(135deg,#1a3a2a,#2a4a3a)}
+.d-network .design-card{background:#1a3a2a;color:#d4a574;font-family:'Playfair Display',serif;border:1px solid #d4a574}
+.d-network .dc-photo{background:linear-gradient(135deg,#2a4a3a,#3a5a4a)}
+.d-network .dc-divider{background:#d4a574}
+.d-network .dc-rsvp{background:#d4a574;color:#1a3a2a}
+
+.d-summit{background:linear-gradient(135deg,#1a2a4a,#3a4a6a)}
+.d-summit .design-card{background:#1a2a4a;color:#e0e8f0;font-family:'Inter',sans-serif;border:2px solid #e0e8f0}
+.d-summit .dc-photo{background:linear-gradient(135deg,#3a4a6a,#5a6a8a)}
+.d-summit .dc-divider{background:#e0e8f0}
+.d-summit .dc-rsvp{background:#e0e8f0;color:#1a2a4a}
+
+/* ── GRADUATIONS (10) ── */
+.d-classic{background:linear-gradient(135deg,#0a1a3a,#1a2a4a)}
+.d-classic .design-card{background:#0a1a3a;color:#d4a574;font-family:'Playfair Display',serif;border:3px double #d4a574}
+.d-classic .dc-photo{background:linear-gradient(135deg,#1a2a4a,#3a4a6a);font-size:60px}
+.d-classic .dc-divider{background:#d4a574}
+.d-classic .dc-rsvp{background:#d4a574;color:#0a1a3a}
+
+.d-cherry{background:linear-gradient(135deg,#ffe4ec,#ffc8d8)}
+.d-cherry .design-card{background:#fff;color:#a02060;font-family:'Playfair Display',serif}
+.d-cherry .design-card::before{content:'🌸';position:absolute;top:14px;left:18px;font-size:24px;opacity:.6}
+.d-cherry .design-card::after{content:'🌸';position:absolute;bottom:14px;right:18px;font-size:24px;opacity:.6}
+.d-cherry .dc-photo{background:linear-gradient(135deg,#ffd0e0,#ffa0c0)}
+.d-cherry .dc-divider{background:#a02060}
+.d-cherry .dc-rsvp{background:#a02060;color:#fff}
+
+.d-future{background:linear-gradient(135deg,#fff5a0,#ffd000)}
+.d-future .design-card{background:#1a1a1a;color:#ffd000;font-family:'Bebas Neue',sans-serif;border:4px solid #ffd000}
+.d-future .dc-photo{background:linear-gradient(135deg,#ffd000,#ff9000)}
+.d-future .dc-divider{background:#ffd000}
+.d-future .dc-rsvp{background:#ffd000;color:#1a1a1a}
+
+.d-ivy{background:linear-gradient(135deg,#5a0f1f,#7a1c2c)}
+.d-ivy .design-card{background:#f5e8d4;color:#5a0f1f;font-family:'Cinzel',serif;border:2px solid #5a0f1f}
+.d-ivy .dc-photo{background:linear-gradient(135deg,#5a0f1f,#7a1c2c);font-size:50px;color:#f5e8d4}
+.d-ivy .dc-divider{background:#5a0f1f}
+.d-ivy .dc-rsvp{background:#5a0f1f;color:#f5e8d4}
+
+.d-modgrad{background:linear-gradient(135deg,#a8e0c8,#3a4a4a)}
+.d-modgrad .design-card{background:#fff;color:#1a3a2a;font-family:'Inter',sans-serif;border-bottom:4px solid #a8e0c8}
+.d-modgrad .dc-photo{background:linear-gradient(135deg,#a8e0c8,#5aa888)}
+.d-modgrad .dc-divider{background:#1a3a2a}
+.d-modgrad .dc-rsvp{background:#1a3a2a;color:#a8e0c8}
+
+.d-tassel{background:linear-gradient(135deg,#0a0a0a,#2a1a08)}
+.d-tassel .design-card{background:#0a0a0a;color:#d4af37;font-family:'Cinzel',serif;border:2px solid #d4af37}
+.d-tassel .dc-photo{background:linear-gradient(135deg,#2a1a08,#5a3a18);font-size:60px;color:#d4af37}
+.d-tassel .dc-divider{background:#d4af37}
+.d-tassel .dc-rsvp{background:#d4af37;color:#0a0a0a}
+
+.d-diploma{background:linear-gradient(135deg,#f5e8c8,#e0d0a8)}
+.d-diploma .design-card{background:#fdf8e4;color:#3a2a18;font-family:'Dancing Script',cursive;border:1px solid #3a2a18}
+.d-diploma .dc-eyebrow{font-family:'Inter',sans-serif}
+.d-diploma .dc-photo{background:linear-gradient(135deg,#e0d0a8,#c0b088)}
+.d-diploma .dc-divider{background:#3a2a18}
+.d-diploma .dc-rsvp{background:#3a2a18;color:#fdf8e4;font-family:'Inter',sans-serif}
+
+.d-school{background:linear-gradient(135deg,#cc1f1f,#1f3fcc)}
+.d-school .design-card{background:#fff;color:#1f3fcc;font-family:'Bebas Neue',sans-serif;border:5px solid;border-image:linear-gradient(45deg,#cc1f1f,#1f3fcc) 1}
+.d-school .dc-photo{background:linear-gradient(135deg,#cc1f1f,#1f3fcc)}
+.d-school .dc-divider{background:#cc1f1f}
+.d-school .dc-rsvp{background:#cc1f1f;color:#fff}
+
+.d-bookworm{background:linear-gradient(135deg,#1a3a2a,#3a2818)}
+.d-bookworm .design-card{background:#fdf8e4;color:#1a3a2a;font-family:'Playfair Display',serif;border:2px solid #1a3a2a}
+.d-bookworm .dc-photo{background:linear-gradient(135deg,#1a3a2a,#3a5a4a);font-size:50px}
+.d-bookworm .dc-divider{background:#1a3a2a}
+.d-bookworm .dc-rsvp{background:#1a3a2a;color:#fdf8e4}
+
+.d-confgrad{background:linear-gradient(135deg,#fff,#f8f0e8)}
+.d-confgrad .design-card{background:#fff;color:#5a3a8a;font-family:'Inter',sans-serif;position:relative;overflow:hidden}
+.d-confgrad .design-card::before{content:'🎓✨🎉';position:absolute;top:10px;left:0;right:0;text-align:center;font-size:24px}
+.d-confgrad .dc-photo{background:linear-gradient(135deg,#e0d0f0,#b890d0)}
+.d-confgrad .dc-divider{background:#5a3a8a}
+.d-confgrad .dc-rsvp{background:#5a3a8a;color:#fff}
+
+/* ── BABY SHOWERS (10) ── */
+.d-pinkcloud{background:linear-gradient(135deg,#ffe4ec,#ffd0e0)}
+.d-pinkcloud .design-card{background:#fff;color:#a04068;font-family:'Pacifico',cursive}
+.d-pinkcloud .dc-eyebrow{font-family:'Inter',sans-serif}
+.d-pinkcloud .dc-photo{background:linear-gradient(135deg,#ffd0e0,#ffa0c0);font-size:60px}
+.d-pinkcloud .dc-divider{background:#a04068}
+.d-pinkcloud .dc-rsvp{background:#a04068;color:#fff;font-family:'Inter',sans-serif}
+
+.d-babyblue{background:linear-gradient(135deg,#d4e8f8,#a8d0ec)}
+.d-babyblue .design-card{background:#fff;color:#1a4070;font-family:'Pacifico',cursive}
+.d-babyblue .design-card::before{content:'⭐';position:absolute;top:14px;left:18px;font-size:24px;color:#1a4070}
+.d-babyblue .design-card::after{content:'⭐';position:absolute;bottom:14px;right:18px;font-size:24px;color:#1a4070}
+.d-babyblue .dc-eyebrow{font-family:'Inter',sans-serif}
+.d-babyblue .dc-photo{background:linear-gradient(135deg,#a8d0ec,#7ab0d8);font-size:60px}
+.d-babyblue .dc-divider{background:#1a4070}
+.d-babyblue .dc-rsvp{background:#1a4070;color:#fff;font-family:'Inter',sans-serif}
+
+.d-duckling{background:linear-gradient(135deg,#fff5d4,#ffe890)}
+.d-duckling .design-card{background:#fff;color:#8a6010;font-family:'Pacifico',cursive}
+.d-duckling .dc-eyebrow{font-family:'Inter',sans-serif}
+.d-duckling .dc-photo{background:linear-gradient(135deg,#ffe890,#ffd040);font-size:80px}
+.d-duckling .dc-divider{background:#8a6010}
+.d-duckling .dc-rsvp{background:#8a6010;color:#fff;font-family:'Inter',sans-serif}
+
+.d-mintnursery{background:linear-gradient(135deg,#d8f0e0,#b0e0c8)}
+.d-mintnursery .design-card{background:#fff;color:#1a4a30;font-family:'Playfair Display',serif}
+.d-mintnursery .dc-photo{background:linear-gradient(135deg,#b0e0c8,#80c0a0);font-size:60px}
+.d-mintnursery .dc-divider{background:#1a4a30}
+.d-mintnursery .dc-rsvp{background:#1a4a30;color:#fff}
+
+.d-safari{background:linear-gradient(135deg,#e8d8b8,#c8a878)}
+.d-safari .design-card{background:#fdf8e4;color:#3a2810;font-family:'Playfair Display',serif;border:2px solid #c8a878}
+.d-safari .dc-photo{background:linear-gradient(135deg,#c8a878,#a08858);font-size:60px}
+.d-safari .dc-divider{background:#3a2810}
+.d-safari .dc-rsvp{background:#3a2810;color:#fdf8e4}
+
+.d-starsmoon{background:linear-gradient(135deg,#0a1a3a,#1a2a4a)}
+.d-starsmoon .design-card{background:#0a1a3a;color:#ffd700;font-family:'Playfair Display',serif;border:1px solid #ffd700}
+.d-starsmoon .design-card::before{content:'✨';position:absolute;top:14px;left:18px;font-size:24px;color:#ffd700}
+.d-starsmoon .design-card::after{content:'🌙';position:absolute;bottom:14px;right:18px;font-size:24px}
+.d-starsmoon .dc-photo{background:linear-gradient(135deg,#1a2a4a,#3a4a6a);font-size:60px}
+.d-starsmoon .dc-divider{background:#ffd700}
+.d-starsmoon .dc-rsvp{background:#ffd700;color:#0a1a3a}
+
+.d-boho{background:linear-gradient(135deg,#f0e0c8,#d4b890)}
+.d-boho .design-card{background:#fdf3e3;color:#5a4028;font-family:'Dancing Script',cursive}
+.d-boho .dc-eyebrow{font-family:'Inter',sans-serif}
+.d-boho .dc-photo{background:linear-gradient(135deg,#d4b890,#b89870);font-size:60px}
+.d-boho .dc-divider{background:#5a4028}
+.d-boho .dc-rsvp{background:#5a4028;color:#fdf3e3;font-family:'Inter',sans-serif}
+
+.d-bunny{background:linear-gradient(135deg,#e8d8f0,#d0b8e0)}
+.d-bunny .design-card{background:#fff;color:#5a2a78;font-family:'Pacifico',cursive}
+.d-bunny .dc-eyebrow{font-family:'Inter',sans-serif}
+.d-bunny .dc-photo{background:linear-gradient(135deg,#d0b8e0,#b090c8);font-size:80px}
+.d-bunny .dc-divider{background:#5a2a78}
+.d-bunny .dc-rsvp{background:#5a2a78;color:#fff;font-family:'Inter',sans-serif}
+
+.d-twinkle{background:linear-gradient(135deg,#fff,#fce8e0)}
+.d-twinkle .design-card{background:#fff;color:#a8527a;font-family:'Playfair Display',serif;position:relative;overflow:hidden}
+.d-twinkle .design-card::before{content:'⭐ ✨ ⭐';position:absolute;top:10px;left:0;right:0;text-align:center;font-size:18px;color:#d4a574}
+.d-twinkle .dc-photo{background:linear-gradient(135deg,#fce8e0,#f4c8b8)}
+.d-twinkle .dc-divider{background:#a8527a}
+.d-twinkle .dc-rsvp{background:#a8527a;color:#fff}
+
+.d-rainbowbaby{background:linear-gradient(135deg,#ffd0d0,#d0e8ff,#d0f0d0,#fff0c0)}
+.d-rainbowbaby .design-card{background:#fff;color:#5a3060;font-family:'Pacifico',cursive}
+.d-rainbowbaby .dc-eyebrow{font-family:'Inter',sans-serif}
+.d-rainbowbaby .dc-photo{background:linear-gradient(135deg,#ffd0d0,#d0e8ff,#d0f0d0,#fff0c0);font-size:60px}
+.d-rainbowbaby .dc-divider{background:#5a3060}
+.d-rainbowbaby .dc-rsvp{background:#5a3060;color:#fff;font-family:'Inter',sans-serif}
+
+/* ── ENGAGEMENTS (10) ── */
+.d-diamond{background:linear-gradient(135deg,#fff,#f0f0fc)}
+.d-diamond .design-card{background:#fff;color:#5a4080;font-family:'Playfair Display',serif;border:1px solid #5a4080;box-shadow:0 0 50px rgba(90,64,128,.15)}
+.d-diamond .design-card::before{content:'💎';position:absolute;top:14px;left:50%;transform:translateX(-50%);font-size:30px}
+.d-diamond .dc-photo{background:linear-gradient(135deg,#e8e0fc,#c8b8ec);font-size:60px;margin-top:30px}
+.d-diamond .dc-divider{background:#5a4080}
+.d-diamond .dc-rsvp{background:#5a4080;color:#fff}
+
+.d-rosegold{background:linear-gradient(135deg,#fce0d8,#e8b8a8)}
+.d-rosegold .design-card{background:#fff;color:#8a3a2c;font-family:'Playfair Display',serif;border:2px solid #c87a64}
+.d-rosegold .dc-photo{background:linear-gradient(135deg,#e8b8a8,#c87a64);font-size:60px}
+.d-rosegold .dc-divider{background:#8a3a2c}
+.d-rosegold .dc-rsvp{background:linear-gradient(135deg,#c87a64,#8a3a2c);color:#fff}
+
+.d-champagne{background:linear-gradient(135deg,#fff5d4,#e8d090)}
+.d-champagne .design-card{background:#fdf8e4;color:#5a3818;font-family:'Cinzel',serif;border:2px solid #c8a050}
+.d-champagne .dc-photo{background:linear-gradient(135deg,#e8d090,#c8a050);font-size:60px}
+.d-champagne .dc-divider{background:#5a3818}
+.d-champagne .dc-rsvp{background:#5a3818;color:#fdf8e4}
+
+.d-starlit{background:linear-gradient(135deg,#0a0a28,#1a1438)}
+.d-starlit .design-card{background:#0a0a28;color:#e0d4f0;font-family:'Playfair Display',serif;border:1px solid #e0d4f0;position:relative;overflow:hidden}
+.d-starlit .design-card::before{content:'⭐ ✨ ⭐ ✨';position:absolute;top:10px;left:0;right:0;text-align:center;font-size:14px;color:#ffd700;letter-spacing:6px}
+.d-starlit .dc-photo{background:radial-gradient(circle at 30% 30%,#ffd700,transparent 30%),linear-gradient(135deg,#1a1438,#2a2448)}
+.d-starlit .dc-divider{background:#e0d4f0}
+.d-starlit .dc-rsvp{background:#e0d4f0;color:#0a0a28}
+
+.d-paris{background:linear-gradient(135deg,#1a3a6a,#2a4a7a)}
+.d-paris .design-card{background:#fdf8e4;color:#1a3a6a;font-family:'Playfair Display',serif;border:2px solid #f5d8a8}
+.d-paris .design-card::before{content:'🗼';position:absolute;top:14px;left:50%;transform:translateX(-50%);font-size:30px}
+.d-paris .dc-photo{background:linear-gradient(135deg,#2a4a7a,#4a6a9a);margin-top:30px;font-size:60px}
+.d-paris .dc-divider{background:#1a3a6a}
+.d-paris .dc-rsvp{background:#1a3a6a;color:#fdf8e4}
+
+.d-loverslane{background:linear-gradient(135deg,#ffd4d8,#ff8a90)}
+.d-loverslane .design-card{background:#fff;color:#a01828;font-family:'Dancing Script',cursive}
+.d-loverslane .design-card::before{content:'❤';position:absolute;top:14px;left:18px;font-size:24px;color:#a01828}
+.d-loverslane .design-card::after{content:'❤';position:absolute;bottom:14px;right:18px;font-size:24px;color:#a01828}
+.d-loverslane .dc-eyebrow{font-family:'Inter',sans-serif}
+.d-loverslane .dc-photo{background:linear-gradient(135deg,#ff8a90,#cc4858)}
+.d-loverslane .dc-divider{background:#a01828}
+.d-loverslane .dc-rsvp{background:#a01828;color:#fff;font-family:'Inter',sans-serif}
+
+.d-vintageromance{background:linear-gradient(135deg,#e8d8b8,#c8a878)}
+.d-vintageromance .design-card{background:#fdf3e3;color:#3a2818;font-family:'Playfair Display',serif;border:1px solid #3a2818;box-shadow:inset 0 0 20px rgba(58,40,24,.1)}
+.d-vintageromance .dc-photo{background:linear-gradient(135deg,#c8a878,#a88858);filter:sepia(.4)}
+.d-vintageromance .dc-divider{background:#3a2818}
+.d-vintageromance .dc-rsvp{background:#3a2818;color:#fdf3e3}
+
+.d-modlove{background:linear-gradient(135deg,#fff,#1a1a1a)}
+.d-modlove .design-card{background:#fff;color:#1a1a1a;font-family:'Bebas Neue',sans-serif;border:5px solid #1a1a1a}
+.d-modlove .design-card::before{content:'❤';position:absolute;top:14px;left:50%;transform:translateX(-50%);font-size:30px;color:#dc1432}
+.d-modlove .dc-photo{background:#1a1a1a;color:#dc1432;margin-top:30px}
+.d-modlove .dc-divider{background:#dc1432}
+.d-modlove .dc-rsvp{background:#dc1432;color:#fff}
+
+.d-gardenprop{background:linear-gradient(135deg,#f0d4d4,#d8a8a8)}
+.d-gardenprop .design-card{background:#fff;color:#5a2828;font-family:'Playfair Display',serif}
+.d-gardenprop .design-card::before{content:'🌹';position:absolute;top:14px;left:18px;font-size:24px}
+.d-gardenprop .design-card::after{content:'🌹';position:absolute;bottom:14px;right:18px;font-size:24px}
+.d-gardenprop .dc-photo{background:linear-gradient(135deg,#d8a8a8,#a87878)}
+.d-gardenprop .dc-divider{background:#5a2828}
+.d-gardenprop .dc-rsvp{background:#5a2828;color:#fff}
+
+.d-sapphire{background:linear-gradient(135deg,#0a2a5a,#1a3a6a)}
+.d-sapphire .design-card{background:#0a2a5a;color:#c8d8e8;font-family:'Cinzel',serif;border:2px solid #c8d8e8}
+.d-sapphire .dc-photo{background:linear-gradient(135deg,#1a3a6a,#3a5a8a);font-size:60px}
+.d-sapphire .dc-divider{background:#c8d8e8}
+.d-sapphire .dc-rsvp{background:#c8d8e8;color:#0a2a5a}
+
+@media(max-width:480px){
+  .preview-bar{padding:8px 12px;height:54px}
+  .pb-name{font-size:13px}
+  .pb-back{font-size:12px;padding:5px 8px}
+  .pb-btn{padding:7px 11px;font-size:11px}
+  .preview-screen{padding-top:54px}
+  .design{padding:30px 16px}
+  .design-card{padding:30px 22px}
+  .dc-photo{height:140px}
+}
+</style>
+</head>
+<body>
+
+<!-- PREVIEW BAR -->
+<div class="preview-bar">
+  <div class="pb-info">
+    <a href="#" id="backBtn" class="pb-back">← Back</a>
+    <div style="min-width:0">
+      <div class="pb-name" id="designName">Loading…</div>
+      <div class="pb-cat" id="designCat"></div>
+    </div>
+  </div>
+  <div class="pb-actions">
+    <button class="pb-btn pb-btn-grad" id="useBtn">Use This →</button>
+  </div>
+</div>
+
+<!-- DESIGN PREVIEW -->
+<div class="preview-screen" id="previewScreen"></div>
+
+<script>
+/* Mapping of design name → CSS class + sample text */
+var DESIGN_MAP = {
+  /* Weddings */
+  "Garden Romance":      {cls:"d-garden",   eyebrow:"You're Invited",  photo:"🌿"},
+  "Midnight Glamour":    {cls:"d-midnight", eyebrow:"Save the Date",   photo:"✨"},
+  "Coastal Breeze":      {cls:"d-coastal",  eyebrow:"With Love",       photo:"🌊"},
+  "Rustic Barn":         {cls:"d-rustic",   eyebrow:"Together Forever",photo:"🌾"},
+  "Confetti Joy":        {cls:"d-confetti", eyebrow:"Celebrate",       photo:"🎊"},
+  "Art Deco":            {cls:"d-deco",     eyebrow:"The Wedding Of",  photo:"♢"},
+  "Japanese Zen":        {cls:"d-zen",      eyebrow:"Wedding Invite",  photo:"🌸"},
+  "Love Shower":         {cls:"d-love",     eyebrow:"Two Hearts One",  photo:"💕"},
+  "Fairytale":           {cls:"d-fairy",    eyebrow:"Once Upon a Time",photo:"🏰"},
+  "Tropical Paradise":   {cls:"d-tropical", eyebrow:"Aloha",           photo:"🌺"},
+  /* Birthdays */
+  "Pastel Party":        {cls:"d-pastel",   eyebrow:"It's a Party",    photo:"🎈"},
+  "Disco Glam":          {cls:"d-disco",    eyebrow:"Get Down",        photo:"🪩"},
+  "Tropical Pop":        {cls:"d-tropop",   eyebrow:"Beach Vibes",     photo:"🌴"},
+  "Black Tie":           {cls:"d-blacktie", eyebrow:"Cordially",       photo:"🥂"},
+  "Confetti Burst":      {cls:"d-confburst",eyebrow:"Surprise",        photo:"🎉"},
+  "Vintage Diner":       {cls:"d-vintage",  eyebrow:"Let's Eat Cake",  photo:"🍰"},
+  "Birthday Bash":       {cls:"d-bash",     eyebrow:"It's Going Down", photo:"🎁"},
+  "Ombre Sunset":        {cls:"d-ombre",    eyebrow:"Golden Hour",     photo:"🌅"},
+  "Kids Playland":       {cls:"d-kids",     eyebrow:"Come Play",       photo:"🎪"},
+  "Milestone Gold":      {cls:"d-milestone",eyebrow:"A Decade",        photo:"⭐"},
+  /* Corporate */
+  "Modern Minimal":      {cls:"d-modern",   eyebrow:"You're Invited",  photo:"●"},
+  "Tech Forward":        {cls:"d-tech",     eyebrow:"Innovation Day",  photo:"⬢"},
+  "Executive Suite":     {cls:"d-exec",     eyebrow:"Leadership Forum",photo:"♟"},
+  "Conference Pro":      {cls:"d-conf",     eyebrow:"Annual Conference",photo:"🎤"},
+  "Startup Vibes":       {cls:"d-startup",  eyebrow:"Launching Soon",  photo:"🚀"},
+  "Gala Night":          {cls:"d-gala",     eyebrow:"Evening of",      photo:"🥂"},
+  "Awards Ceremony":     {cls:"d-awards",   eyebrow:"Recognition",     photo:"🏆"},
+  "Product Launch":      {cls:"d-launch",   eyebrow:"Reveal",          photo:"⚡"},
+  "Networking Mix":      {cls:"d-network",  eyebrow:"Connect",         photo:"◆"},
+  "Annual Summit":       {cls:"d-summit",   eyebrow:"The Summit",      photo:"⌬"},
+  /* Graduations */
+  "Classic Cap":         {cls:"d-classic",  eyebrow:"Graduation",      photo:"🎓"},
+  "Cherry Blossom":      {cls:"d-cherry",   eyebrow:"Blossoming",      photo:"🌸"},
+  "Future Bright":       {cls:"d-future",   eyebrow:"Class Of",        photo:"⭐"},
+  "Ivy League":          {cls:"d-ivy",      eyebrow:"Commencement",    photo:"📜"},
+  "Modern Grad":         {cls:"d-modgrad",  eyebrow:"Made It",         photo:"🎯"},
+  "Gold Tassel":         {cls:"d-tassel",   eyebrow:"Achievement",     photo:"🎓"},
+  "Diploma Day":         {cls:"d-diploma",  eyebrow:"Honors Day",      photo:"📃"},
+  "Class Photo":         {cls:"d-school",   eyebrow:"School Spirit",   photo:"🏫"},
+  "Bookworm":            {cls:"d-bookworm", eyebrow:"Knowledge",       photo:"📚"},
+  "Confetti Grad":       {cls:"d-confgrad", eyebrow:"Celebrate",       photo:"🎊"},
+  /* Baby Showers */
+  "Pink Cloud":          {cls:"d-pinkcloud",eyebrow:"It's a Girl",     photo:"☁️"},
+  "Baby Blue":           {cls:"d-babyblue", eyebrow:"It's a Boy",      photo:"⭐"},
+  "Yellow Duckling":     {cls:"d-duckling", eyebrow:"Baby Shower",     photo:"🦆"},
+  "Mint Nursery":        {cls:"d-mintnursery",eyebrow:"Welcome Baby",  photo:"🍼"},
+  "Safari Friends":      {cls:"d-safari",   eyebrow:"Wild One",        photo:"🦁"},
+  "Stars & Moon":        {cls:"d-starsmoon",eyebrow:"Twinkle",         photo:"🌙"},
+  "Boho Beige":          {cls:"d-boho",     eyebrow:"Sweet Arrival",   photo:"🌾"},
+  "Bunny Hop":           {cls:"d-bunny",    eyebrow:"Hippity Hop",     photo:"🐰"},
+  "Twinkle Twinkle":     {cls:"d-twinkle",  eyebrow:"Little Star",     photo:"⭐"},
+  "Rainbow Baby":        {cls:"d-rainbowbaby",eyebrow:"Welcome",       photo:"🌈"},
+  /* Engagements */
+  "Diamond Glow":        {cls:"d-diamond",  eyebrow:"She Said Yes",    photo:"💍"},
+  "Rose Gold":           {cls:"d-rosegold", eyebrow:"Forever",         photo:"🌹"},
+  "Champagne Toast":     {cls:"d-champagne",eyebrow:"Cheers",          photo:"🥂"},
+  "Starlit Night":       {cls:"d-starlit",  eyebrow:"Written in Stars",photo:"✨"},
+  "Paris Romance":       {cls:"d-paris",    eyebrow:"L'amour",         photo:"💕"},
+  "Lover's Lane":        {cls:"d-loverslane",eyebrow:"Two Souls One",  photo:"❤"},
+  "Vintage Romance":     {cls:"d-vintageromance",eyebrow:"Timeless",   photo:"📷"},
+  "Modern Love":         {cls:"d-modlove",  eyebrow:"It's Official",   photo:"❤"},
+  "Garden Proposal":     {cls:"d-gardenprop",eyebrow:"He Asked",       photo:"🌹"},
+  "Sapphire & Silver":   {cls:"d-sapphire", eyebrow:"With Joy",        photo:"💎"}
+};
+
+var CAT_LABELS = {
+  weddings: "Wedding Design",
+  birthdays: "Birthday Design",
+  corporate: "Corporate Design",
+  graduations: "Graduation Design",
+  "baby-showers": "Baby Shower Design",
+  engagements: "Engagement Design"
+};
+
+/* Sample text per category — placeholder names */
+var SAMPLE_TEXT = {
+  weddings:    {n1:"First",  n2:"Second",   date:"15 June 2026",     venue:"Your Venue, City"},
+  birthdays:   {n1:"Name",   n2:"",         date:"22 March 2026",    venue:"Your Venue, City"},
+  corporate:   {n1:"Event Name",n2:"",      date:"10 April 2026",    venue:"Your Venue, City"},
+  graduations: {n1:"Name",   n2:"",         date:"28 July 2026",     venue:"Your University"},
+  "baby-showers":{n1:"Name", n2:"",         date:"5 May 2026",       venue:"Your Venue, City"},
+  engagements: {n1:"First",  n2:"Second",   date:"14 February 2026", venue:"Your Venue, City"}
+};
+
+/* Build the preview */
+var params = new URLSearchParams(location.search);
+var name = params.get("name") || "Garden Romance";
+var cat = params.get("cat") || "weddings";
+
+var design = DESIGN_MAP[name];
+var sample = SAMPLE_TEXT[cat] || SAMPLE_TEXT.weddings;
+
+if (!design) {
+  document.getElementById("previewScreen").innerHTML = '<div style="padding:80px 20px;text-align:center;color:#fff5ec"><h2 style="font-family:Playfair Display,serif;font-size:28px;margin-bottom:12px">Design not found</h2><p>This template could not be loaded.</p></div>';
+} else {
+  document.getElementById("designName").textContent = name;
+  document.getElementById("designCat").textContent = CAT_LABELS[cat] || cat;
+
+  var html = '<div class="design ' + design.cls + '">';
+  html +=   '<div class="design-card" style="position:relative">';
+  html +=     '<div class="dc-photo">' + design.photo + '</div>';
+  html +=     '<div class="dc-eyebrow">' + design.eyebrow + '</div>';
+  html +=     '<div class="dc-names">' + sample.n1;
+  if (sample.n2) html += '<span class="dc-amp">&amp;</span>' + sample.n2;
+  html +=     '</div>';
+  html +=     '<div class="dc-tagline">We would be delighted for you to join us in celebrating this special occasion.</div>';
+  html +=     '<div class="dc-divider"></div>';
+  html +=     '<div class="dc-detail">The Date</div>';
+  html +=     '<div class="dc-bigdate">' + sample.date + '</div>';
+  html +=     '<div class="dc-venue">' + sample.venue + '</div>';
+  html +=     '<button class="dc-rsvp">RSVP Now</button>';
+  html +=   '</div>';
+  html += '</div>';
+  document.getElementById("previewScreen").innerHTML = html;
+}
+
+/* Wire up buttons */
+document.getElementById("backBtn").addEventListener("click", function(e) {
+  e.preventDefault();
+  window.location.href = "templates.html?cat=" + cat;
+});
+document.getElementById("useBtn").addEventListener("click", function() {
+  window.location.href = "signup.html?template=" + encodeURIComponent(name) + "&cat=" + cat;
+});
+</script>
+</body>
+</html>

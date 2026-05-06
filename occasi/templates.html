@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5"/>
+<title>Templates — Occasi</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;500;600;700&family=Cinzel:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/theme.css">
+<style>
+.hero{padding:78px 20px 24px;text-align:center}
+.hero h1{font-family:'Playfair Display',serif;font-size:clamp(28px,5vw,46px);font-weight:700;line-height:1.05;margin-bottom:8px;color:var(--ink)}
+.hero h1 em{font-style:italic;background:linear-gradient(135deg,var(--c1),var(--c3));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero p{font-size:14px;color:var(--ink2);max-width:480px;margin:0 auto}
+
+.cat-tabs{display:flex;justify-content:center;gap:8px;padding:24px 16px 0;flex-wrap:wrap;max-width:900px;margin:0 auto}
+.ctab{padding:9px 18px;border-radius:20px;border:1.5px solid var(--line);background:var(--card);color:var(--ink2);font-size:12px;font-weight:600;cursor:pointer;letter-spacing:.04em;font-family:'Inter',sans-serif;transition:all .2s;display:inline-flex;align-items:center;gap:6px}
+.ctab:hover{border-color:var(--c1);color:var(--c1)}
+.ctab.active{background:linear-gradient(135deg,var(--c1),var(--c3));color:var(--bg);border-color:transparent}
+
+.wrap{max-width:1120px;margin:0 auto;padding:24px 16px 60px}
+.cat-info{text-align:center;margin-bottom:24px;padding:16px;background:var(--card);border-radius:14px;border:1px solid var(--line)}
+.cat-info-title{font-family:'Playfair Display',serif;font-size:22px;color:var(--ink);margin-bottom:4px;font-weight:700}
+.cat-info-sub{font-size:12px;color:var(--muted)}
+
+.tg{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.tc{border:1px solid var(--line);border-radius:16px;overflow:hidden;cursor:pointer;transition:all .25s;background:var(--card)}
+.tc:hover{transform:translateY(-3px);box-shadow:var(--shadow);border-color:var(--c1)}
+.tp{height:160px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;letter-spacing:.06em;text-align:center;padding:14px;font-family:'Playfair Display',serif;font-style:italic;position:relative;overflow:hidden}
+.tb{padding:14px 16px}
+.tn{font-size:14px;font-weight:700;color:var(--ink);margin-bottom:3px}
+.td{font-size:11px;color:var(--ink2);margin-bottom:10px;line-height:1.5}
+.tt{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px}
+.ttag{font-size:9px;font-weight:700;padding:3px 8px;border-radius:5px;background:rgba(255,107,157,.1);color:var(--c1);border:1px solid rgba(255,107,157,.2)}
+.ta{display:flex;gap:6px}
+.ta button{flex:1;padding:8px;border-radius:7px;font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;font-family:'Inter',sans-serif;transition:all .2s}
+.ta .preview{border:1.5px solid var(--line);background:transparent;color:var(--ink2)}
+.ta .preview:hover{border-color:var(--c1);color:var(--c1)}
+.ta .select{border:none;background:linear-gradient(135deg,var(--c1),var(--c3));color:var(--bg);box-shadow:0 4px 10px rgba(255,107,157,.25)}
+.ta .select:hover{transform:translateY(-1px);box-shadow:0 6px 14px rgba(255,107,157,.4)}
+
+@media(max-width:860px){.tg{grid-template-columns:1fr 1fr}}
+@media(max-width:480px){.tg{grid-template-columns:1fr}.cat-tabs{padding:20px 12px 0}}
+</style>
+</head>
+<body>
+
+<nav class="top-nav">
+  <a href="index.html" class="brand-logo"><img src="assets/logo.png" alt="Occasi" style="height:32px;width:auto;display:block"><span class="logo-text">OCCASI</span></a>
+  <div class="top-nav-right">
+    <a href="login.html" class="btn btn-ghost btn-sm">Sign in</a>
+    <a href="signup.html" class="btn btn-grad btn-sm">Get Started →</a>
+  </div>
+</nav>
+
+<div class="hero">
+  <h1>Choose your<br><em>perfect template</em></h1>
+  <p>10 unique designs for every event category.</p>
+</div>
+
+<div class="cat-tabs">
+  <button class="ctab active" data-cat="weddings">💒 Weddings</button>
+  <button class="ctab" data-cat="birthdays">🎂 Birthdays</button>
+  <button class="ctab" data-cat="corporate">💼 Corporate</button>
+  <button class="ctab" data-cat="graduations">🎓 Graduations</button>
+  <button class="ctab" data-cat="baby-showers">🍼 Baby Showers</button>
+  <button class="ctab" data-cat="engagements">💍 Engagements</button>
+</div>
+
+<div class="wrap">
+  <div class="cat-info">
+    <div class="cat-info-title" id="catTitle">Wedding Designs</div>
+    <div class="cat-info-sub" id="catSub">10 unique designs · fully customisable · mobile-perfect</div>
+  </div>
+  <div class="tg" id="grid"></div>
+</div>
+
+<script>
+/* ============================================
+   60 UNIQUE DESIGNS — 10 PER CATEGORY
+   Each design has its own colour palette and styling
+   ============================================ */
+var DESIGNS = {
+  weddings: [
+    {n:"Garden Romance",d:"Sage greens, warm linen, floral accents.",bg:"linear-gradient(135deg,#f5e8d4,#d4c0a8)",fg:"#5a4030"},
+    {n:"Midnight Glamour",d:"Black obsidian with shimmering gold details.",bg:"linear-gradient(135deg,#0d0d1a,#1a1428)",fg:"#d4a574"},
+    {n:"Coastal Breeze",d:"Azure blues, frosted glass, fresh and airy.",bg:"linear-gradient(135deg,#cce4f0,#88b8d4)",fg:"#1a4a6c"},
+    {n:"Rustic Barn",d:"Wood browns, copper tones, handwritten script.",bg:"linear-gradient(135deg,#3a2010,#5a3424)",fg:"#e8c59a"},
+    {n:"Confetti Joy",d:"Hot pink bursts, festive celebration energy.",bg:"linear-gradient(135deg,#ffd6ee,#ffa0c8)",fg:"#a01c5c"},
+    {n:"Art Deco",d:"1920s geometric gold with stacked layout.",bg:"linear-gradient(135deg,#1a1208,#3a2c10)",fg:"#d4b450"},
+    {n:"Japanese Zen",d:"Red ink, white space, refined elegance.",bg:"#f8f6f0",fg:"#8a1414"},
+    {n:"Love Shower",d:"Deep violet with falling hearts and rings.",bg:"linear-gradient(135deg,#1a0a2e,#3d1060)",fg:"#e090d8"},
+    {n:"Fairytale",d:"Warm ambers, arched photo, dreamy storybook vibes.",bg:"linear-gradient(135deg,#f9e0c8,#e8b890)",fg:"#6b3a2a"},
+    {n:"Tropical Paradise",d:"Jungle greens, sun-drenched celebrations.",bg:"linear-gradient(135deg,#003322,#006644)",fg:"#ffe836"}
+  ],
+  birthdays: [
+    {n:"Pastel Party",d:"Soft rainbow pastels — playful and joyful.",bg:"linear-gradient(135deg,#ffd6e0,#c8e0ff,#fff0c8)",fg:"#7a3060"},
+    {n:"Disco Glam",d:"Glitter gold, neon pink, mirrored ball energy.",bg:"linear-gradient(135deg,#1a0530,#5d1090)",fg:"#ffd700"},
+    {n:"Tropical Pop",d:"Hot coral, lime, parrot greens — vacation vibes.",bg:"linear-gradient(135deg,#00a86b,#ff6b35)",fg:"#fff8a0"},
+    {n:"Black Tie",d:"Sophisticated charcoal with rose gold accents.",bg:"linear-gradient(135deg,#0a0a14,#2a2a3a)",fg:"#e8a09a"},
+    {n:"Confetti Burst",d:"White background with rainbow confetti showers.",bg:"linear-gradient(180deg,#fff,#fff0f8)",fg:"#d4227a"},
+    {n:"Vintage Diner",d:"Mint green, cherry red, milkshake nostalgia.",bg:"linear-gradient(135deg,#a0e0c8,#ff8a8a)",fg:"#5a1010"},
+    {n:"Birthday Bash",d:"Bold red &amp; yellow stripes — circus party.",bg:"linear-gradient(135deg,#ff3030,#ffd000)",fg:"#3a0808"},
+    {n:"Ombre Sunset",d:"Pink-to-orange gradient — golden hour glow.",bg:"linear-gradient(135deg,#ff9966,#ff5577,#a04088)",fg:"#fff8e8"},
+    {n:"Kids Playland",d:"Primary colours, balloons, big shapes.",bg:"linear-gradient(135deg,#5588ff,#ffaa00,#ff6688)",fg:"#fff"},
+    {n:"Milestone Gold",d:"Black &amp; gold — for big numbers (40, 50, 60).",bg:"linear-gradient(135deg,#000,#1a1a1a)",fg:"#d4af37"}
+  ],
+  corporate: [
+    {n:"Modern Minimal",d:"Clean white space with bold black accents.",bg:"linear-gradient(135deg,#fff,#f0f0f4)",fg:"#1a1a2a"},
+    {n:"Tech Forward",d:"Cyan blues, sleek geometry, futuristic feel.",bg:"linear-gradient(135deg,#0a1428,#1a3050)",fg:"#00d4ff"},
+    {n:"Executive Suite",d:"Deep navy with gold — premium &amp; commanding.",bg:"linear-gradient(135deg,#0a1a3a,#1a2a4a)",fg:"#d4a574"},
+    {n:"Conference Pro",d:"Burgundy &amp; cream — formal yet warm.",bg:"linear-gradient(135deg,#5a1414,#8a2424)",fg:"#f5e8d4"},
+    {n:"Startup Vibes",d:"Bright teal, white, energetic and modern.",bg:"linear-gradient(135deg,#fff,#e0f8f4)",fg:"#0a8a7a"},
+    {n:"Gala Night",d:"Black-tie black with crystal silver accents.",bg:"linear-gradient(135deg,#0a0a0a,#2a2a2a)",fg:"#c0c0d0"},
+    {n:"Awards Ceremony",d:"Royal purple &amp; gold — recognition &amp; prestige.",bg:"linear-gradient(135deg,#2a0a4a,#4a1a7a)",fg:"#ffd700"},
+    {n:"Product Launch",d:"Neon pink on black — buzz-worthy excitement.",bg:"linear-gradient(135deg,#0a0a14,#1a0a24)",fg:"#ff0080"},
+    {n:"Networking Mix",d:"Forest green &amp; brass — sophisticated mingling.",bg:"linear-gradient(135deg,#1a3a2a,#2a4a3a)",fg:"#d4a574"},
+    {n:"Annual Summit",d:"Steel blue with chrome accents — corporate strength.",bg:"linear-gradient(135deg,#1a2a4a,#3a4a6a)",fg:"#e0e8f0"}
+  ],
+  graduations: [
+    {n:"Classic Cap",d:"Traditional navy &amp; gold — academic prestige.",bg:"linear-gradient(135deg,#0a1a3a,#1a2a4a)",fg:"#d4a574"},
+    {n:"Cherry Blossom",d:"Soft pinks with cherry blossom petals.",bg:"linear-gradient(135deg,#ffe4ec,#ffc8d8)",fg:"#a02060"},
+    {n:"Future Bright",d:"Sunshine yellow &amp; bold black — optimism.",bg:"linear-gradient(135deg,#fff5a0,#ffd000)",fg:"#1a1a1a"},
+    {n:"Ivy League",d:"Deep maroon &amp; cream — traditional academia.",bg:"linear-gradient(135deg,#5a0f1f,#7a1c2c)",fg:"#f5e8d4"},
+    {n:"Modern Grad",d:"Mint &amp; charcoal — fresh &amp; contemporary.",bg:"linear-gradient(135deg,#a8e0c8,#3a4a4a)",fg:"#fff"},
+    {n:"Gold Tassel",d:"Black with gold metallic tassel imagery.",bg:"linear-gradient(135deg,#0a0a0a,#2a1a08)",fg:"#d4af37"},
+    {n:"Diploma Day",d:"Cream parchment with calligraphy script.",bg:"linear-gradient(135deg,#f5e8c8,#e0d0a8)",fg:"#3a2a18"},
+    {n:"Class Photo",d:"School-spirit blue, red, white stripes.",bg:"linear-gradient(135deg,#cc1f1f,#1f3fcc)",fg:"#fff"},
+    {n:"Bookworm",d:"Forest green &amp; old-book brown nostalgia.",bg:"linear-gradient(135deg,#1a3a2a,#3a2818)",fg:"#e0c890"},
+    {n:"Confetti Grad",d:"White background with metallic foil confetti.",bg:"linear-gradient(135deg,#fff,#f8f0e8)",fg:"#5a3a8a"}
+  ],
+  "baby-showers": [
+    {n:"Pink Cloud",d:"Soft baby pink with fluffy cloud illustrations.",bg:"linear-gradient(135deg,#ffe4ec,#ffd0e0)",fg:"#a04068"},
+    {n:"Baby Blue",d:"Sky blue with little stars — gentle &amp; sweet.",bg:"linear-gradient(135deg,#d4e8f8,#a8d0ec)",fg:"#1a4070"},
+    {n:"Yellow Duckling",d:"Sunny yellow with duckling cuteness.",bg:"linear-gradient(135deg,#fff5d4,#ffe890)",fg:"#8a6010"},
+    {n:"Mint Nursery",d:"Soft mint &amp; cream — calm &amp; fresh.",bg:"linear-gradient(135deg,#d8f0e0,#b0e0c8)",fg:"#1a4a30"},
+    {n:"Safari Friends",d:"Earthy tones with jungle animal silhouettes.",bg:"linear-gradient(135deg,#e8d8b8,#c8a878)",fg:"#3a2810"},
+    {n:"Stars &amp; Moon",d:"Deep navy with golden stars &amp; crescent moons.",bg:"linear-gradient(135deg,#0a1a3a,#1a2a4a)",fg:"#ffd700"},
+    {n:"Boho Beige",d:"Neutral cream with macramé textures.",bg:"linear-gradient(135deg,#f0e0c8,#d4b890)",fg:"#5a4028"},
+    {n:"Bunny Hop",d:"Pastel lavender with bunny illustrations.",bg:"linear-gradient(135deg,#e8d8f0,#d0b8e0)",fg:"#5a2a78"},
+    {n:"Twinkle Twinkle",d:"White with rose gold star sparkles.",bg:"linear-gradient(135deg,#fff,#fce8e0)",fg:"#a8527a"},
+    {n:"Rainbow Baby",d:"Soft rainbow pastels — joyful arrival.",bg:"linear-gradient(135deg,#ffd0d0,#d0e8ff,#d0f0d0,#fff0c0)",fg:"#5a3060"}
+  ],
+  engagements: [
+    {n:"Diamond Glow",d:"Crisp white with diamond sparkle accents.",bg:"linear-gradient(135deg,#fff,#f0f0fc)",fg:"#5a4080"},
+    {n:"Rose Gold",d:"Blush pink &amp; rose gold — romantic luxury.",bg:"linear-gradient(135deg,#fce0d8,#e8b8a8)",fg:"#8a3a2c"},
+    {n:"Champagne Toast",d:"Cream &amp; gold bubbles — celebratory.",bg:"linear-gradient(135deg,#fff5d4,#e8d090)",fg:"#5a3818"},
+    {n:"Starlit Night",d:"Deep midnight with constellation patterns.",bg:"linear-gradient(135deg,#0a0a28,#1a1438)",fg:"#e0d4f0"},
+    {n:"Paris Romance",d:"Eiffel-tower blue with romantic Parisian feel.",bg:"linear-gradient(135deg,#1a3a6a,#2a4a7a)",fg:"#f5d8a8"},
+    {n:"Lover's Lane",d:"Soft pinks &amp; reds with hearts &amp; roses.",bg:"linear-gradient(135deg,#ffd4d8,#ff8a90)",fg:"#a01828"},
+    {n:"Vintage Romance",d:"Sepia tones with old-photograph nostalgia.",bg:"linear-gradient(135deg,#e8d8b8,#c8a878)",fg:"#3a2818"},
+    {n:"Modern Love",d:"Bold black &amp; white with red heart accent.",bg:"linear-gradient(135deg,#fff,#1a1a1a)",fg:"#dc1432"},
+    {n:"Garden Proposal",d:"Dusty rose with botanical illustrations.",bg:"linear-gradient(135deg,#f0d4d4,#d8a8a8)",fg:"#5a2828"},
+    {n:"Sapphire &amp; Silver",d:"Deep blue jewel tones with silver shimmer.",bg:"linear-gradient(135deg,#0a2a5a,#1a3a6a)",fg:"#c8d8e8"}
+  ]
+};
+
+var CAT_NAMES = {
+  weddings: "Wedding Designs",
+  birthdays: "Birthday Designs",
+  corporate: "Corporate Event Designs",
+  graduations: "Graduation Designs",
+  "baby-showers": "Baby Shower Designs",
+  engagements: "Engagement Designs"
+};
+
+function buildGrid(cat) {
+  var arr = DESIGNS[cat] || [];
+  document.getElementById("catTitle").textContent = CAT_NAMES[cat] || "Templates";
+  document.getElementById("grid").innerHTML = arr.map(function(t,i){
+    var tags = ["RSVP","Website"][i%2 === 0 ? 0 : 1];
+    return '<div class="tc"><div class="tp" style="background:'+t.bg+';color:'+t.fg+';cursor:pointer" onclick="window.open(\'rsvp.html?site=preview&template='+encodeURIComponent(t.n)+'\',\'_blank\')">'+t.n+'</div><div class="tb"><div class="tn">'+t.n+'</div><div class="td">'+t.d+'</div><div class="tt"><span class="ttag">'+CAT_NAMES[cat].split(" ")[0]+'</span><span class="ttag">Customisable</span></div><div class="ta"><button class="preview" onclick="window.open(\'rsvp.html?site=preview&template='+encodeURIComponent(t.n)+'\',\'_blank\')">Try Demo</button><button class="select" onclick="window.location.href=\'signup.html?template='+encodeURIComponent(t.n)+'&cat='+cat+'\'">Use This →</button></div></div></div>';
+  }).join('');
+}
+
+/* Get cat from URL */
+var urlCat = new URLSearchParams(location.search).get("cat") || "weddings";
+if (!DESIGNS[urlCat]) urlCat = "weddings";
+buildGrid(urlCat);
+
+/* Set initial active tab */
+document.querySelectorAll(".ctab").forEach(function(tab){
+  if (tab.dataset.cat === urlCat) tab.classList.add("active");
+  else tab.classList.remove("active");
+  tab.addEventListener("click", function(){
+    document.querySelectorAll(".ctab").forEach(function(t){t.classList.remove("active")});
+    tab.classList.add("active");
+    buildGrid(tab.dataset.cat);
+    /* Update URL without reload */
+    var url = new URL(window.location);
+    url.searchParams.set("cat", tab.dataset.cat);
+    window.history.replaceState({}, '', url);
+  });
+});
+</script>
+</body>
+</html>

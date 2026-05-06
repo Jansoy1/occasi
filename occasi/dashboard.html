@@ -1,0 +1,450 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5"/>
+<title>Dashboard — Occasi</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;500;600;700&family=Cinzel:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/theme.css">
+<style>
+.layout{display:flex;min-height:100vh}
+.sidebar{width:230px;flex-shrink:0;background:#fff;border-right:1px solid var(--line);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:50;transition:transform .3s}
+.sb-logo{padding:18px 18px;border-bottom:1px solid var(--line)}
+.sb-user{padding:14px 18px;border-bottom:1px solid var(--line)}
+.sb-user-name{font-size:13px;font-weight:700;color:var(--ink);margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sb-user-email{font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sb-plan{display:inline-flex;align-items:center;gap:5px;margin-top:6px;background:linear-gradient(135deg,rgba(255,107,157,.1),rgba(200,80,200,.1));border:1px solid rgba(200,80,200,.2);padding:3px 10px;border-radius:20px;font-size:10px;font-weight:700;color:var(--c2);letter-spacing:.06em;text-transform:uppercase}
+nav.sb-nav{flex:1;padding:14px 10px;overflow-y:auto}
+.nav-label{font-size:9px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);padding:0 8px;margin:14px 0 5px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:500;color:var(--ink2);transition:all .18s;text-decoration:none;margin-bottom:2px}
+.nav-item:hover{background:linear-gradient(135deg,rgba(255,107,157,.06),rgba(200,80,200,.06));color:var(--ink)}
+.nav-item.active{background:linear-gradient(135deg,rgba(255,107,157,.12),rgba(200,80,200,.12));color:var(--c2);font-weight:700}
+.nav-icon{font-size:15px;width:20px;text-align:center;flex-shrink:0}
+.nav-badge{margin-left:auto;background:linear-gradient(135deg,var(--c1),var(--c2));color:#fff;font-size:9px;font-weight:700;padding:2px 7px;border-radius:10px}
+.sb-bot{padding:14px 10px;border-top:1px solid var(--line)}
+
+.main{margin-left:230px;flex:1;min-height:100vh}
+.topbar{position:sticky;top:0;z-index:40;height:54px;background:rgba(253,249,240,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 24px;gap:12px}
+.menu-btn{display:none;background:none;border:none;cursor:pointer;font-size:22px;padding:0;color:var(--ink)}
+.tb-title{font-size:15px;font-weight:700;color:var(--ink);flex:1}
+.content{padding:24px}
+
+.trial-alert{background:linear-gradient(135deg,rgba(61,78,200,.08),rgba(160,64,216,.08));border:1px solid rgba(122,62,200,.2);border-radius:14px;padding:14px 18px;margin-bottom:22px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+.trial-alert-text strong{color:var(--c2);font-size:13px;display:block;margin-bottom:2px}
+.trial-alert-text span{font-size:12px;color:var(--ink2);opacity:.85}
+
+.dash-section{display:none}
+.dash-section.active{display:block}
+
+.ov-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:24px}
+.ov-card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;transition:transform .25s}
+.ov-card:hover{transform:translateY(-2px);box-shadow:var(--shadow)}
+.ov-icon{font-size:22px;margin-bottom:8px}
+.ov-label{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+.ov-value{font-family:'Playfair Display',serif;font-size:30px;color:var(--ink);line-height:1;font-weight:700}
+.ov-sub{font-size:11px;color:var(--muted);margin-top:4px}
+
+.site-card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:22px;margin-bottom:20px}
+.site-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px}
+.site-title{font-size:14px;font-weight:700;color:var(--ink)}
+.status-dot{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;letter-spacing:.05em}
+.status-dot::before{content:'';width:8px;height:8px;border-radius:50%;background:var(--ok);animation:blink 2s ease-in-out infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.4}}
+.status-dot.building::before{background:var(--warn);animation:none}
+.site-url{font-size:13px;color:var(--c2);margin-bottom:12px;word-break:break-all;font-weight:600}
+.site-actions{display:flex;flex-wrap:wrap;gap:8px}
+
+.edit-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.edit-card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px}
+.edit-card.full{grid-column:1/-1}
+.edit-title{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--c2);margin-bottom:14px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+.save-btn{padding:10px 24px;border-radius:10px;border:none;background:linear-gradient(135deg,var(--c1),var(--c2));color:#fff;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;font-family:'Inter',sans-serif;transition:all .2s}
+.save-btn:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(200,80,180,.3)}
+.save-confirm{font-size:12px;color:var(--ok);margin-left:10px;display:none;font-weight:600}
+
+.r-toolbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px}
+.r-stats{display:flex;gap:12px;flex-wrap:wrap}
+.rstat{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:11px 18px;text-align:center}
+.rstat-n{font-family:'Playfair Display',serif;font-size:24px;color:var(--c2);line-height:1;font-weight:700}
+.rstat-l{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-top:3px}
+.r-search{padding:9px 14px;border-radius:9px;border:1.5px solid var(--line);background:var(--card);color:var(--ink);font-size:13px;outline:none;font-family:'Inter',sans-serif;width:200px}
+.r-search:focus{border-color:var(--c2)}
+.r-table{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.rt-head{display:grid;grid-template-columns:1fr 1fr 1fr 100px;padding:12px 18px;background:rgba(122,62,200,.04);border-bottom:1px solid var(--line)}
+.rt-head span{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.rt-row{display:grid;grid-template-columns:1fr 1fr 1fr 100px;padding:13px 18px;border-bottom:1px solid var(--line);align-items:center}
+.rt-row:last-child{border-bottom:none}
+.rt-row:hover{background:rgba(255,107,157,.03)}
+.rt-name{font-size:14px;color:var(--ink);font-weight:500}
+.rt-meta{font-size:12px;color:var(--muted)}
+.rt-empty{text-align:center;padding:40px;color:var(--muted);font-style:italic;font-size:14px}
+.export-btn{padding:8px 16px;border-radius:8px;border:1.5px solid var(--c2);background:transparent;color:var(--c2);font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;font-family:'Inter',sans-serif}
+.export-btn:hover{background:var(--c2);color:#fff}
+
+.plan-current{background:linear-gradient(135deg,#fff,#faf6ff);border:2px solid;border-image:linear-gradient(135deg,var(--c1),var(--c2)) 1;border-radius:18px;padding:24px;margin-bottom:18px}
+.plan-name-display{font-family:'Playfair Display',serif;font-size:26px;background:linear-gradient(135deg,var(--c1),var(--c2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:4px;font-weight:700}
+.plan-details{font-size:13px;color:var(--ink2);line-height:1.6;margin-bottom:16px}
+.plan-change-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.pcc{border:2px solid var(--line);border-radius:12px;padding:14px;text-align:center;cursor:pointer;transition:all .22s;background:var(--card)}
+.pcc:hover{border-color:var(--c2);transform:translateY(-2px)}
+.pcc.current-plan{border-color:var(--c2);background:linear-gradient(135deg,rgba(255,107,157,.04),rgba(200,80,200,.04))}
+.pcc-name{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink2);margin-bottom:5px}
+.pcc-price{font-family:'Playfair Display',serif;font-size:22px;color:var(--ink);font-weight:700}
+.pcc-price small{font-size:11px;color:var(--muted);font-family:'Inter',sans-serif}
+.pcc-btn{margin-top:8px;padding:7px 12px;border-radius:7px;border:1.5px solid var(--c2);background:transparent;color:var(--c2);font-size:11px;cursor:pointer;font-family:'Inter',sans-serif;font-weight:600;width:100%}
+.pcc-btn:hover{background:var(--c2);color:#fff}
+.pcc-btn.active-plan{background:var(--c2);color:#fff;cursor:default}
+
+@media(max-width:900px){
+  .sidebar{transform:translateX(-100%);width:280px;box-shadow:0 0 50px rgba(0,0,0,.2)}
+  .sidebar.open{transform:translateX(0)}
+  .main{margin-left:0}
+  .menu-btn{display:block}
+  .ov-grid{grid-template-columns:1fr 1fr}
+  .edit-grid{grid-template-columns:1fr}
+  .edit-card.full{grid-column:1}
+  .rt-head,.rt-row{grid-template-columns:1fr 1fr}
+  .rt-head span:nth-child(n+3),.rt-row>*:nth-child(n+3){display:none}
+  .plan-change-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div class="layout">
+
+<div class="sidebar" id="sidebar">
+  <div class="sb-logo"><a href="index.html" class="brand-logo"><img src="assets/logo.png" alt="Occasi" style="height:28px;width:auto;display:block"><span class="logo-text">OCCASI</span></a></div>
+  <div class="sb-user">
+    <div class="sb-user-name" id="sbName">Loading…</div>
+    <div class="sb-user-email" id="sbEmail"></div>
+    <div class="sb-plan" id="sbPlan">–</div>
+  </div>
+  <nav class="sb-nav">
+    <div class="nav-label">My Site</div>
+    <a class="nav-item active" data-section="overview" href="#"><span class="nav-icon">🏠</span> Overview</a>
+    <a class="nav-item" data-section="edit" href="#"><span class="nav-icon">✏️</span> Edit My Site</a>
+    <div class="nav-label">Guests</div>
+    <a class="nav-item" data-section="responses" href="#"><span class="nav-icon">📋</span> RSVP Responses<span class="nav-badge" id="rsvpBadge">0</span></a>
+    <div class="nav-label">Account</div>
+    <a class="nav-item" data-section="plan" href="#"><span class="nav-icon">💳</span> My Plan</a>
+    <a class="nav-item" data-section="settings" href="#"><span class="nav-icon">⚙️</span> Settings</a>
+  </nav>
+  <div class="sb-bot"><a class="nav-item" href="#" id="signoutBtn"><span class="nav-icon">🚪</span> Sign Out</a></div>
+</div>
+
+<div class="main">
+  <div class="topbar">
+    <button class="menu-btn" id="menuBtn">☰</button>
+    <div class="tb-title" id="tbTitle">Overview</div>
+    <button class="btn btn-grad btn-sm" id="viewSiteBtn">View Live ↗</button>
+  </div>
+
+  <div class="content">
+
+    <div class="trial-alert" id="trialAlert" style="display:none">
+      <div class="trial-alert-text">
+        <strong id="trialTitle">🎁 Free Trial Active</strong>
+        <span id="trialSub">Your trial ends soon</span>
+      </div>
+      <button class="btn btn-grad btn-sm" onclick="showSection('plan')">Manage Billing</button>
+    </div>
+
+    <!-- Overview -->
+    <div class="dash-section active" id="sec-overview">
+      <div class="ov-grid">
+        <div class="ov-card"><div class="ov-icon">👥</div><div class="ov-label">Total RSVPs</div><div class="ov-value" id="ovTotal">0</div><div class="ov-sub">guests confirmed</div></div>
+        <div class="ov-card"><div class="ov-icon">📅</div><div class="ov-label">Wedding Date</div><div class="ov-value" id="ovDate" style="font-size:18px;padding-top:6px">–</div><div class="ov-sub" id="ovDaysLeft"></div></div>
+        <div class="ov-card"><div class="ov-icon">⏰</div><div class="ov-label">RSVP Deadline</div><div class="ov-value" id="ovDeadline" style="font-size:18px;padding-top:6px">–</div></div>
+      </div>
+
+      <div class="site-card">
+        <div class="site-header">
+          <div class="site-title">Your Site</div>
+          <div class="status-dot" id="statusDot">Live</div>
+        </div>
+        <div class="site-url" id="siteUrl">Setting up…</div>
+        <div style="font-size:13px;color:var(--muted);margin-bottom:14px" id="siteTpl">Template: –</div>
+        <div class="site-actions">
+          <button class="btn btn-grad btn-sm" id="viewLiveBtn">View Live Site ↗</button>
+          <button class="btn btn-ghost btn-sm" onclick="showSection('edit')">Edit Content</button>
+          <button class="btn btn-ghost btn-sm" onclick="showSection('responses')">View RSVPs</button>
+        </div>
+      </div>
+
+      <div class="site-card">
+        <div class="site-header"><div class="site-title">Recent RSVPs</div><a href="#" onclick="showSection('responses');return false" style="font-size:12px;color:var(--c2);text-decoration:none;font-weight:600">View all →</a></div>
+        <div id="recentRsvps"><div style="text-align:center;padding:24px;color:var(--muted);font-style:italic;font-size:13px">No RSVPs yet — share your link to start!</div></div>
+      </div>
+    </div>
+
+    <!-- Edit -->
+    <div class="dash-section" id="sec-edit">
+      <div class="edit-grid">
+        <div class="edit-card"><div class="edit-title">The Couple</div>
+          <div class="field"><label>Partner 1</label><input id="e-p1" placeholder="e.g. John"></div>
+          <div class="field"><label>Partner 2</label><input id="e-p2" placeholder="e.g. Lucy"></div>
+        </div>
+        <div class="edit-card"><div class="edit-title">Key Dates</div>
+          <div class="field"><label>Wedding Date</label><input id="e-wdate" type="date"></div>
+          <div class="field"><label>RSVP Deadline</label><input id="e-rdate" type="date"></div>
+        </div>
+        <div class="edit-card"><div class="edit-title">Venue</div>
+          <div class="field"><label>Venue Name</label><input id="e-venue" placeholder="e.g. The Grand Manor"></div>
+          <div class="field"><label>Address</label><input id="e-address" placeholder="City, Country"></div>
+        </div>
+        <div class="edit-card"><div class="edit-title">Design</div>
+          <div class="field"><label>RSVP Template</label><select id="e-rsvp-template">
+            <option>Garden Romance</option><option>Midnight Glamour</option><option>Coastal Breeze</option><option>Rustic Barn</option><option>Confetti Celebration</option><option>Art Deco</option><option>Japanese Zen</option><option>Love Shower</option><option>Fairytale Storybook</option><option>Tropical Paradise</option>
+          </select></div>
+          <div class="field"><label>Website Template</label><select id="e-web-template">
+            <option>Elegant Ivory</option><option>Modern Editorial</option><option>Dark Romance</option><option>Coastal Modern</option><option>Vibrant & Fun</option><option>Botanical Garden</option>
+          </select></div>
+        </div>
+        <div class="edit-card full"><div class="edit-title">Personal Message</div>
+          <div class="field"><label>Tagline</label><textarea id="e-tagline" placeholder="e.g. We would be delighted for you to join us…"></textarea></div>
+          <div class="field"><label>Thank You Message</label><textarea id="e-thankyou" placeholder="We look forward to celebrating…"></textarea></div>
+          <button class="save-btn" id="saveBtn">Save Changes ✓</button>
+          <span class="save-confirm" id="saveConfirm">✓ Saved!</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Responses -->
+    <div class="dash-section" id="sec-responses">
+      <div class="r-toolbar">
+        <div class="r-stats">
+          <div class="rstat"><div class="rstat-n" id="rTotal">0</div><div class="rstat-l">Total Guests</div></div>
+          <div class="rstat"><div class="rstat-n" id="rSubs">0</div><div class="rstat-l">Submissions</div></div>
+        </div>
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+          <input class="r-search" id="rSearch" placeholder="Search by name…">
+          <button class="export-btn" id="exportBtn">⬇ Export CSV</button>
+        </div>
+      </div>
+      <div class="r-table">
+        <div class="rt-head"><span>Guest Name</span><span>Submitted</span><span>Group</span><span>Status</span></div>
+        <div id="rList"></div>
+      </div>
+    </div>
+
+    <!-- Plan -->
+    <div class="dash-section" id="sec-plan">
+      <div class="plan-current">
+        <div style="font-size:11px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-bottom:6px">Current Plan</div>
+        <div class="plan-name-display" id="planNameDisplay">–</div>
+        <div class="plan-details" id="planDetails">Loading plan details…</div>
+        <button class="btn btn-grad" id="manageBillingBtn">Manage Billing in Stripe ↗</button>
+      </div>
+      <div style="font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:12px">Change Plan</div>
+      <div class="plan-change-grid">
+        <div class="pcc" data-plan="rsvp"><div class="pcc-name">RSVP Only</div><div class="pcc-price">£9<small>/mo</small></div><button class="pcc-btn">Switch</button></div>
+        <div class="pcc" data-plan="bundle"><div class="pcc-name">Full Bundle</div><div class="pcc-price">£39<small>/mo</small></div><button class="pcc-btn">Switch</button></div>
+        <div class="pcc" data-plan="website"><div class="pcc-name">Website Only</div><div class="pcc-price">£25<small>/mo</small></div><button class="pcc-btn">Switch</button></div>
+      </div>
+    </div>
+
+    <!-- Settings -->
+    <div class="dash-section" id="sec-settings">
+      <div style="max-width:520px">
+        <div class="edit-card" style="margin-bottom:14px"><div class="edit-title">Account Details</div>
+          <div class="field"><label>Full Name</label><input id="s-name" placeholder="Your name"></div>
+          <div class="field"><label>Email</label><input id="s-email" type="email" placeholder="your@email.com"></div>
+          <button class="save-btn" id="saveAcctBtn">Save Account</button>
+        </div>
+        <div class="edit-card"><div class="edit-title">Change Password</div>
+          <div class="field"><label>New Password</label><input id="s-newpass" type="password"></div>
+          <div class="field"><label>Confirm</label><input id="s-confpass" type="password"></div>
+          <button class="save-btn" id="savePassBtn">Update Password</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+</div>
+
+<script src="js/occasi-auth.js"></script>
+<script>
+var currentUser = null, siteData = null, allResponses = [];
+
+function onSupabaseReady() { loadDashboard(); }
+
+async function loadDashboard() {
+  currentUser = await requireAuth("/login.html");
+  if (!currentUser) return;
+
+  /* Check for Stripe success redirect */
+  if (new URLSearchParams(location.search).get("success") === "1") {
+    alert("✓ Payment successful! Your account is now active.");
+    window.history.replaceState({}, '', '/dashboard.html');
+  }
+
+  /* Welcome new signups */
+  if (new URLSearchParams(location.search).get("welcome") === "1") {
+    setTimeout(function() {
+      alert("🎉 Welcome to Occasi! Your account is ready. Browse templates and we'll set up your event site.");
+    }, 500);
+    window.history.replaceState({}, '', '/dashboard.html');
+  }
+
+  var profile = await getUserProfile(currentUser.id);
+  var name = profile?.full_name || currentUser.user_metadata?.full_name || currentUser.email;
+  document.getElementById("sbName").textContent = name || "–";
+  document.getElementById("sbEmail").textContent = currentUser.email;
+
+  var plan = profile?.plan || currentUser.user_metadata?.plan || "rsvp";
+  var planLabels = {rsvp:"RSVP Only",website:"Website Only",bundle:"Full Bundle"};
+  document.getElementById("sbPlan").textContent = planLabels[plan] || plan;
+  document.getElementById("planNameDisplay").textContent = planLabels[plan] || plan;
+  document.getElementById("planDetails").textContent = "£" + (PLAN_DETAILS[plan]?.monthly || "?") + "/month · Active subscription via Stripe.";
+
+  var trialEnd = profile?.trial_ends_at || currentUser.user_metadata?.trial_ends_at;
+  if (trialEnd && new Date(trialEnd) > new Date()) {
+    var days = Math.ceil((new Date(trialEnd) - new Date()) / 86400000);
+    document.getElementById("trialAlert").style.display = "flex";
+    document.getElementById("trialTitle").textContent = "🎁 " + days + " day" + (days!==1?"s":"") + " left in your trial";
+    document.getElementById("trialSub").textContent = "You'll be auto-charged £39 when the trial ends.";
+  }
+
+  var { data: sites } = await supabase.from("sites").select("*, site_content(*)").eq("user_id", currentUser.id).limit(1);
+  siteData = sites && sites.length ? sites[0] : null;
+
+  if (siteData) {
+    var content = siteData.site_content && siteData.site_content[0];
+    document.getElementById("siteUrl").textContent = siteData.subdomain ? window.location.origin + "/rsvp.html?site=" + siteData.subdomain : "Site being set up by admin…";
+    document.getElementById("siteTpl").textContent = "Template: " + (content?.rsvp_template || "Not set");
+    if (content) {
+      ["e-p1","e-p2","e-wdate","e-rdate","e-venue","e-address","e-rsvp-template","e-web-template","e-tagline","e-thankyou"].forEach(function(id, i){
+        var keys = ["partner_1","partner_2","wedding_date","rsvp_deadline","venue_name","venue_address","rsvp_template","web_template","tagline","thankyou"];
+        var el = document.getElementById(id);
+        if (el && content[keys[i]]) el.value = content[keys[i]];
+      });
+      if (content.wedding_date) {
+        document.getElementById("ovDate").textContent = new Date(content.wedding_date).toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"});
+        var dLeft = Math.ceil((new Date(content.wedding_date) - new Date()) / 86400000);
+        document.getElementById("ovDaysLeft").textContent = dLeft > 0 ? dLeft + " days to go" : "Today!";
+      }
+      if (content.rsvp_deadline) document.getElementById("ovDeadline").textContent = new Date(content.rsvp_deadline).toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"});
+    }
+  }
+
+  await loadResponses();
+  document.getElementById("s-name").value = name || "";
+  document.getElementById("s-email").value = currentUser.email || "";
+
+  /* Wire up view live buttons */
+  if (siteData && siteData.subdomain) {
+    var liveUrl = window.location.origin + "/rsvp.html?site=" + siteData.subdomain;
+    document.getElementById("viewSiteBtn").onclick = function() { window.open(liveUrl, "_blank"); };
+    document.getElementById("viewLiveBtn").onclick = function() { window.open(liveUrl, "_blank"); };
+  } else {
+    document.getElementById("viewSiteBtn").onclick = function() { alert("Your site is being set up by our admin team. You'll see the live URL here once ready."); };
+    document.getElementById("viewLiveBtn").onclick = function() { alert("Your site is being set up. Please check back soon!"); };
+  }
+
+  document.querySelectorAll(".pcc").forEach(function(c){
+    if (c.dataset.plan === plan) {
+      c.classList.add("current-plan");
+      c.querySelector(".pcc-btn").textContent = "Current";
+      c.querySelector(".pcc-btn").classList.add("active-plan");
+    }
+  });
+}
+
+async function loadResponses() {
+  if (!siteData) { renderResponses([]); return; }
+  var { data } = await supabase.from("rsvp_responses").select("*").eq("site_id", siteData.id).order("submitted_at",{ascending:false});
+  allResponses = data || [];
+  document.getElementById("ovTotal").textContent = allResponses.length;
+  document.getElementById("rsvpBadge").textContent = allResponses.length;
+  document.getElementById("rTotal").textContent = allResponses.length;
+  document.getElementById("rSubs").textContent = allResponses.length;
+  renderResponses(allResponses);
+  renderRecent(allResponses.slice(0, 4));
+}
+
+function renderResponses(rs) {
+  var list = document.getElementById("rList");
+  if (!rs.length) { list.innerHTML = '<div class="rt-empty">No RSVPs yet. Share your link to start collecting responses!</div>'; return; }
+  list.innerHTML = rs.map(function(r){
+    var dt = r.submitted_at ? new Date(r.submitted_at).toLocaleDateString("en-GB",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"}) : "–";
+    return '<div class="rt-row"><div class="rt-name">'+(r.guest_first||"")+' '+(r.guest_last||"")+'</div><div class="rt-meta">'+dt+'</div><div class="rt-meta">Invite of '+(r.invite_size||"?")+'</div><div><span style="background:rgba(34,197,94,.1);color:var(--ok);border:1px solid rgba(34,197,94,.2);padding:3px 10px;border-radius:20px;font-size:10px;font-weight:700">Attending</span></div></div>';
+  }).join('');
+}
+
+function renderRecent(rs) {
+  var el = document.getElementById("recentRsvps");
+  if (!rs.length) return;
+  el.innerHTML = rs.map(function(r){
+    return '<div style="display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--line)"><div style="font-size:14px;color:var(--ink);font-weight:500">'+(r.guest_first||"")+' '+(r.guest_last||"")+'</div><div style="font-size:11px;color:var(--muted)">'+(r.submitted_at?new Date(r.submitted_at).toLocaleDateString("en-GB"):"")+'</div></div>';
+  }).join('');
+}
+
+function showSection(name) {
+  document.querySelectorAll(".dash-section").forEach(function(s){s.classList.remove("active")});
+  document.getElementById("sec-" + name).classList.add("active");
+  document.querySelectorAll(".nav-item").forEach(function(i){i.classList.remove("active")});
+  var navItem = document.querySelector('[data-section="' + name + '"]');
+  if (navItem) navItem.classList.add("active");
+  var titles = {overview:"Overview",edit:"Edit My Site",responses:"RSVP Responses",plan:"My Plan",settings:"Settings"};
+  document.getElementById("tbTitle").textContent = titles[name] || name;
+  document.getElementById("sidebar").classList.remove("open");
+}
+
+document.querySelectorAll(".nav-item[data-section]").forEach(function(i){i.addEventListener("click",function(e){e.preventDefault();showSection(i.dataset.section)})});
+
+document.getElementById("menuBtn").addEventListener("click", function(){document.getElementById("sidebar").classList.toggle("open")});
+
+document.getElementById("saveBtn").addEventListener("click", async function(){
+  if (!siteData) return alert("Site not set up yet");
+  var content = {
+    site_id: siteData.id,
+    partner_1: document.getElementById("e-p1").value.trim(),
+    partner_2: document.getElementById("e-p2").value.trim(),
+    wedding_date: document.getElementById("e-wdate").value || null,
+    rsvp_deadline: document.getElementById("e-rdate").value || null,
+    venue_name: document.getElementById("e-venue").value.trim(),
+    venue_address: document.getElementById("e-address").value.trim(),
+    rsvp_template: document.getElementById("e-rsvp-template").value,
+    web_template: document.getElementById("e-web-template").value,
+    tagline: document.getElementById("e-tagline").value.trim(),
+    thankyou: document.getElementById("e-thankyou").value.trim()
+  };
+  var { error } = await supabase.from("site_content").upsert(content,{onConflict:"site_id"});
+  var c = document.getElementById("saveConfirm");
+  c.style.display = error ? "none" : "inline";
+  if (!error) setTimeout(function(){c.style.display="none"},2500);
+});
+
+document.getElementById("rSearch").addEventListener("input", function(){
+  var q = this.value.toLowerCase();
+  renderResponses(allResponses.filter(function(r){return ((r.guest_first||"")+" "+(r.guest_last||"")).toLowerCase().includes(q)}));
+});
+
+document.getElementById("exportBtn").addEventListener("click", function(){
+  if (!allResponses.length) return alert("No responses to export.");
+  var rows = ["First Name,Last Name,Submitted,Invite Size"];
+  allResponses.forEach(function(r){rows.push([r.guest_first,r.guest_last,r.submitted_at,r.invite_size].join(","))});
+  var blob = new Blob([rows.join("\n")],{type:"text/csv"});
+  var a = document.createElement("a");
+  a.href = URL.createObjectURL(blob); a.download = "occasi-rsvp.csv"; a.click();
+});
+
+document.getElementById("signoutBtn").addEventListener("click", function(e){e.preventDefault();signOut()});
+
+document.getElementById("manageBillingBtn").addEventListener("click", function(){
+  alert("Stripe Customer Portal will open here once your Stripe account is fully connected.");
+});
+
+document.querySelectorAll(".pcc-btn").forEach(function(btn){
+  btn.addEventListener("click", function(){
+    if (btn.classList.contains("active-plan")) return;
+    var plan = btn.closest(".pcc").dataset.plan;
+    if (confirm("Switch to " + PLAN_DETAILS[plan].name + "?")) {
+      startCheckout(plan, currentUser.id, currentUser.email);
+    }
+  });
+});
+</script>
+</body>
+</html>
