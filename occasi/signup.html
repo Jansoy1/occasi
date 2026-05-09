@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5"/>
+<title>Sign Up — Occasi</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;500;600;700&family=Cinzel:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/theme.css">
+<style>
+h1{font-family:'Playfair Display',serif;font-size:24px;text-align:center;margin-bottom:6px;font-weight:700;line-height:1.1}
+h1 em{font-style:italic;background:linear-gradient(135deg,var(--c1),var(--c2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.sub{font-size:13px;color:var(--ink2);text-align:center;margin-bottom:20px}
+.sub a{color:var(--c2);text-decoration:none;font-weight:600}
+
+.label{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.plans-mini{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:14px}
+.pmini{padding:10px 6px;border-radius:11px;text-align:center;cursor:pointer;border:2px solid var(--line);transition:all .2s}
+.pmini.active{border-color:var(--c2);background:linear-gradient(135deg,rgba(255,107,157,.06),rgba(200,80,200,.06))}
+.pmini-name{font-size:10px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--ink);margin-bottom:3px}
+.pmini-price{font-family:'Playfair Display',serif;font-size:17px;color:var(--ink);line-height:1;font-weight:700}
+.pmini-price small{font-size:9px;color:var(--muted);font-family:'Inter',sans-serif;font-weight:400}
+.pmini-tag{font-size:8px;color:var(--c2);font-weight:700;margin-top:3px}
+
+.summary{background:linear-gradient(135deg,rgba(61,78,200,.08),rgba(160,64,216,.08));border:1px solid rgba(122,62,200,.2);border-radius:12px;padding:11px 14px;margin-bottom:16px;text-align:center}
+.summary strong{display:block;color:var(--c2);font-size:13px;margin-bottom:2px}
+.summary span{font-size:11px;color:var(--ink2);opacity:.8}
+
+.social{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
+.s-btn{width:100%;padding:11px;border-radius:11px;border:1px solid var(--line);background:rgba(255,255,255,.95);color:#1a0a14;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:9px;font-family:'Inter',sans-serif;transition:all .2s}
+.s-btn:hover,.s-btn:active{border-color:var(--c2);transform:translateY(-1px);box-shadow:0 4px 14px rgba(200,80,180,.12)}
+.s-btn svg{width:17px;height:17px;flex-shrink:0}
+
+.divider{display:flex;align-items:center;gap:10px;margin:12px 0;color:var(--muted);font-size:11px;font-weight:600;letter-spacing:.08em}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--line)}
+
+.terms{font-size:11px;color:var(--muted);margin-bottom:14px;line-height:1.5;text-align:center}
+.terms a{color:var(--c2);text-decoration:none}
+
+.submit{width:100%;padding:13px;border-radius:12px;border:none;background:linear-gradient(135deg,var(--c1),var(--c2));color:#fff;font-size:14px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;letter-spacing:.04em;box-shadow:0 6px 18px rgba(200,80,180,.3);transition:all .2s}
+.submit:hover,.submit:active{transform:translateY(-1px);box-shadow:0 10px 26px rgba(200,80,180,.45)}
+.submit:disabled{opacity:.7;cursor:not-allowed;transform:none}
+
+#payScreen,#verifyScreen{display:none}
+.pay-info{background:linear-gradient(135deg,#f0fff4,#e0fff0);border:1px solid #86efac;border-radius:12px;padding:12px 14px;margin-bottom:16px;font-size:12px;color:#166534;line-height:1.6;text-align:center}
+.pay-info strong{display:block;margin-bottom:3px}
+
+.v-icon{font-size:54px;margin-bottom:14px;display:block;animation:pulse 2s ease-in-out infinite;text-align:center}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
+.v-title{font-family:'Playfair Display',serif;font-size:22px;color:var(--ink);text-align:center;margin-bottom:8px;font-weight:700}
+.v-sub{font-size:13px;color:var(--ink2);line-height:1.6;margin-bottom:14px;text-align:center}
+.v-email{color:var(--c2);font-weight:700}
+.resend{background:none;border:none;color:var(--c2);font-size:12px;cursor:pointer;font-family:'Inter',sans-serif;text-decoration:underline;font-weight:600;display:block;margin:10px auto 0}
+</style>
+</head>
+<body>
+
+<nav class="top-nav">
+  <a href="index.html" class="brand-logo"><img src="assets/logo.png" alt="Occasi" style="height:32px;width:auto;display:block"><span class="logo-text">OCCASI</span></a>
+  <a href="login.html" class="btn btn-ghost btn-sm">Sign in</a>
+</nav>
+
+<div class="page-wrap">
+  <div class="page-card">
+
+    <div id="signupScreen">
+      <h1>Create your <em>account</em></h1>
+      <p class="sub">Already a member? <a href="login.html">Sign in</a></p>
+
+      <div class="summary" id="summaryBox">
+        <strong>🎁 Full Bundle · 3-day free trial</strong>
+        <span>Card required · £39/mo after trial · cancel anytime</span>
+      </div>
+
+      <div class="label">Choose a plan</div>
+      <div class="plans-mini">
+        <div class="pmini active" data-plan="rsvp"><div class="pmini-name">RSVP</div><div class="pmini-price">£9<small>/mo</small></div></div>
+        <div class="pmini" data-plan="website"><div class="pmini-name">Website + RSVP</div><div class="pmini-price">£19<small>/mo</small></div><div class="pmini-tag">Most popular</div></div>
+      </div>
+
+      <div class="social">
+        <button class="s-btn" id="googleBtn" type="button">
+          <svg viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+          Continue with Google
+        </button>
+        <button class="s-btn" id="appleBtn" type="button">
+          <svg viewBox="0 0 24 24" fill="#000"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+          Continue with Apple
+        </button>
+      </div>
+
+      <div class="divider">or sign up with email</div>
+
+      <div class="field-row">
+        <div class="field"><label>First name</label><input type="text" id="fName" placeholder="e.g. John" maxlength="50"></div>
+        <div class="field"><label>Last name</label><input type="text" id="lName" placeholder="e.g. Singh" maxlength="50"></div>
+      </div>
+      <div class="field"><label>Email</label><input type="email" id="email" placeholder="your@email.com"></div>
+      <div class="field"><label>Password</label><input type="password" id="pass" placeholder="At least 8 characters"></div>
+
+      <p class="terms">By signing up you agree to our <a href="#">Terms</a> &amp; <a href="#">Privacy Policy</a>.</p>
+      <button class="submit" id="signupBtn">Create Account &amp; Continue →</button>
+      <div class="msg" id="msg"></div>
+    </div>
+
+    <!-- Payment redirect screen -->
+    <div id="payScreen">
+      <h1>Almost <em>there</em></h1>
+      <p class="sub">Just one more step to activate your account.</p>
+      <div class="pay-info">
+        <strong>✓ Account created</strong>
+        Continue to your dashboard to start setting up your event site.
+      </div>
+      <button class="submit" id="goToPayBtn">Continue to Dashboard →</button>
+      <p class="terms" style="margin-top:14px">💡 Payment will be added when you're ready to go live</p>
+    </div>
+
+    <!-- Email verify screen -->
+    <div id="verifyScreen">
+      <span class="v-icon">📬</span>
+      <div class="v-title">Check your email</div>
+      <p class="v-sub">We've sent a confirmation link to<br><span class="v-email" id="vEmail"></span></p>
+      <p class="v-sub">Click the link in the email to activate your account.</p>
+      <button class="resend" id="resendBtn">Resend email</button>
+      <div class="msg" id="resendMsg"></div>
+    </div>
+
+  </div>
+</div>
+
+<script src="js/occasi-ui.js"></script>
+<script src="js/occasi-auth.js"></script>
+<script>
+var selectedPlan = "rsvp";
+var urlPlan = new URLSearchParams(location.search).get("plan");
+if (urlPlan && PLAN_DETAILS[urlPlan]) selectedPlan = urlPlan;
+
+function updatePlanUI() {
+  document.querySelectorAll(".pmini").forEach(function(p){
+    if (p.dataset.plan === selectedPlan) p.classList.add("active");
+    else p.classList.remove("active");
+  });
+  var d = PLAN_DETAILS[selectedPlan];
+  if (!d) return;
+  var box = document.getElementById("summaryBox");
+  box.innerHTML = '<strong>' + d.icon + ' ' + d.name + '</strong><span>£' + d.monthly + '/mo · cancel anytime · no setup fees</span>';
+}
+updatePlanUI();
+
+document.querySelectorAll(".pmini").forEach(function(p){
+  p.addEventListener("click", function(){ selectedPlan = p.dataset.plan; updatePlanUI(); });
+});
+
+var pendingUser = null;
+
+function onSupabaseReady() {
+  /* If Supabase didn't load (CDN blocked by browser), show warning */
+  if (!supabase || !supabase.auth) {
+    showMsg("msg", "⚠️ Your browser is blocking the signup service. Please try a different browser (Chrome, Safari, or Firefox) or disable tracking prevention for this site.", true);
+  }
+
+  document.getElementById("googleBtn").addEventListener("click", async function(){
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider:"google",
+      options:{redirectTo:window.location.origin + "/dashboard.html?plan=" + selectedPlan}
+    });
+    if (error) showMsg("msg", error.message, true);
+  });
+
+  document.getElementById("appleBtn").addEventListener("click", async function(){
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider:"apple",
+      options:{redirectTo:window.location.origin + "/dashboard.html?plan=" + selectedPlan}
+    });
+    if (error) showMsg("msg", error.message, true);
+  });
+
+  document.getElementById("signupBtn").addEventListener("click", async function(){
+    var btn = this;
+    var first = document.getElementById("fName").value.trim();
+    var last  = document.getElementById("lName").value.trim();
+    var email = document.getElementById("email").value.trim();
+    var pass  = document.getElementById("pass").value;
+
+    if (!first || !last) return showMsg("msg","Please enter your first and last name.",true);
+    if (!email) return showMsg("msg","Please enter your email.",true);
+    if (pass.length < 8) return showMsg("msg","Password must be at least 8 characters.",true);
+
+    btn.disabled = true; btn.textContent = "Creating account…";
+
+    if (!supabase || !supabase.auth) {
+      btn.disabled = false; btn.textContent = "Create Account & Continue →";
+      return showMsg("msg", "Connection error — please refresh the page and try again. If this keeps happening, your browser may be blocking the connection (try Chrome or Safari).", true);
+    }
+
+    var trialEnds = null;
+
+    const { data, error } = await supabase.auth.signUp({
+      email, password: pass,
+      options:{
+        data:{full_name: first + " " + last, plan: selectedPlan, trial_ends_at: trialEnds},
+        emailRedirectTo: window.location.origin + "/dashboard.html?plan=" + selectedPlan
+      }
+    });
+
+    btn.disabled = false; btn.textContent = "Create Account & Continue →";
+
+    if (error) return showMsg("msg", error.message, true);
+
+    pendingUser = data.user;
+
+    /* If session is active immediately (email confirmation off in Supabase) → go to dashboard
+       Otherwise show "check your email" verify screen */
+    if (data.session) {
+      window.location.href = "/dashboard.html?plan=" + selectedPlan + "&welcome=1";
+      return;
+    }
+
+    /* Show email verify screen */
+    document.getElementById("vEmail").textContent = email;
+    document.getElementById("signupScreen").style.display = "none";
+    document.getElementById("verifyScreen").style.display = "block";
+  });
+
+  document.getElementById("resendBtn").addEventListener("click", async function(){
+    var email = document.getElementById("email").value.trim();
+    if (!email) return;
+    const { error } = await supabase.auth.resend({type:"signup", email});
+    document.getElementById("resendMsg").className = "msg " + (error ? "err" : "ok");
+    document.getElementById("resendMsg").textContent = error ? error.message : "✓ Email resent!";
+  });
+
+  document.getElementById("goToPayBtn").addEventListener("click", function(){
+    /* Stripe checkout disabled for now - go straight to dashboard */
+    window.location.href = "/dashboard.html?plan=" + selectedPlan + "&welcome=1";
+  });
+}
+
+function showMsg(id, m, e) {
+  var el = document.getElementById(id);
+  if (!el) {
+    /* Element gone — use toast as fallback */
+    if (typeof showError === "function") {
+      e ? showError(m) : showSuccess(m);
+    }
+    return;
+  }
+  el.textContent = m;
+  el.className = "msg " + (e ? "err" : "ok");
+}
+</script>
+</body>
+</html>
