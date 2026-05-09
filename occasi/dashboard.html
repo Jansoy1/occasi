@@ -1,0 +1,753 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5"/>
+<title>Dashboard — Occasi</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;500;600;700&family=Cinzel:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/theme.css">
+<style>
+body{background:var(--bg)}
+.layout{display:flex;min-height:100vh}
+
+/* Sidebar */
+.sidebar{width:230px;flex-shrink:0;background:#fff;border-right:1px solid var(--line);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto}
+.sb-logo{padding:16px 20px;border-bottom:1px solid var(--line)}
+.sb-user{padding:16px 20px;border-bottom:1px solid var(--line)}
+.sb-name{font-size:14px;font-weight:700;color:var(--ink);margin-bottom:2px;word-break:break-word}
+.sb-email{font-size:11px;color:var(--muted);word-break:break-word}
+.sb-nav{flex:1;padding:14px 12px}
+.sb-link{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;font-size:13px;color:var(--ink2);text-decoration:none;cursor:pointer;font-weight:500;margin-bottom:2px}
+.sb-link:hover{background:#faf6ff;color:var(--c2)}
+.sb-link.active{background:linear-gradient(135deg,rgba(61,78,200,.1),rgba(160,64,216,.1));color:var(--c2);font-weight:700}
+.sb-link .ico{font-size:14px}
+.sb-bot{padding:14px 12px;border-top:1px solid var(--line)}
+.sb-plan{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.sb-pill{display:inline-block;padding:3px 10px;border-radius:10px;font-size:10px;font-weight:700;background:linear-gradient(135deg,var(--c1),var(--c2),var(--c3));color:#fff}
+
+/* Main */
+.main{flex:1;display:flex;flex-direction:column;min-width:0}
+.topbar{position:sticky;top:0;z-index:40;height:54px;background:rgba(253,249,240,.92);border-bottom:1px solid var(--line);backdrop-filter:blur(16px);display:flex;align-items:center;justify-content:space-between;padding:0 20px;gap:12px}
+.topbar h2{font-family:'Playfair Display',serif;font-size:18px;color:var(--ink);font-weight:700}
+.content{padding:24px;max-width:1080px;width:100%;margin:0 auto}
+
+/* Welcome banner */
+.welcome{background:linear-gradient(135deg,var(--c1),var(--c2),var(--c3));color:#fff;border-radius:16px;padding:18px 22px;margin-bottom:18px;display:flex;align-items:center;gap:16px;box-shadow:0 8px 24px rgba(122,62,200,.2)}
+.welcome-ico{font-size:32px}
+.welcome strong{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;display:block;margin-bottom:2px}
+.welcome span{font-size:13px;opacity:.92}
+
+/* Card */
+.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:20px;margin-bottom:14px;box-shadow:0 4px 14px rgba(122,62,200,.04)}
+.card-h{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px}
+.card-h h3{font-size:15px;font-weight:700;color:var(--ink)}
+.card-h .sub{font-size:11px;color:var(--muted)}
+
+/* Empty state - no site yet */
+.empty-state{background:#fff;border:2px dashed var(--line-purple);border-radius:18px;padding:50px 28px;text-align:center;margin-bottom:14px}
+.empty-icon{font-size:64px;margin-bottom:14px}
+.empty-state h2{font-family:'Playfair Display',serif;font-size:26px;color:var(--ink);margin-bottom:8px;font-weight:700}
+.empty-state h2 em{font-style:italic;background:linear-gradient(135deg,var(--c1),var(--c2),var(--c3));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.empty-state p{font-size:14px;color:var(--ink2);max-width:380px;margin:0 auto 22px;line-height:1.6}
+.empty-cta{display:inline-flex;align-items:center;justify-content:center;padding:13px 28px;background:linear-gradient(135deg,var(--c1),var(--c2),var(--c3));color:#fff;border:none;border-radius:24px;font-size:14px;font-weight:700;cursor:pointer;text-decoration:none;box-shadow:0 4px 14px rgba(122,62,200,.3);font-family:'Inter',sans-serif}
+.empty-cta:hover{transform:translateY(-1px);box-shadow:0 8px 22px rgba(122,62,200,.45)}
+
+/* Site card (when has site) */
+.site-card{background:linear-gradient(135deg,#fff,#faf6ff);border:1px solid rgba(122,62,200,.2);border-radius:16px;padding:22px;margin-bottom:14px;box-shadow:var(--shadow-glow)}
+.site-status{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:4px 10px;border-radius:10px;margin-bottom:8px}
+.site-status.live{background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff}
+.site-status.draft{background:rgba(245,158,11,.15);color:#b45309;border:1px solid rgba(245,158,11,.3)}
+.site-status::before{content:'●';font-size:8px}
+.site-title{font-family:'Playfair Display',serif;font-size:24px;color:var(--ink);font-weight:700;margin-bottom:4px;line-height:1.2}
+.site-meta{font-size:12px;color:var(--muted);margin-bottom:14px}
+.site-url-box{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;align-items:center}
+.site-url{flex:1;min-width:200px;padding:9px 12px;background:#fff;border:1px solid var(--line);border-radius:8px;font-size:12px;color:var(--c2);font-family:monospace;word-break:break-all}
+.site-url-btn{padding:9px 14px;border-radius:8px;border:1.5px solid var(--c2);background:transparent;color:var(--c2);font-size:11px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;letter-spacing:.05em;text-transform:uppercase}
+.site-url-btn:hover{background:var(--c2);color:#fff}
+.site-url-btn.primary{background:linear-gradient(135deg,var(--c1),var(--c2),var(--c3));color:#fff;border-color:transparent}
+.site-actions{display:flex;gap:8px;flex-wrap:wrap;padding-top:14px;border-top:1px solid var(--line)}
+
+/* Stats */
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
+.stat{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px;text-align:center}
+.stat-num{font-family:'Playfair Display',serif;font-size:28px;color:var(--c2);font-weight:700;line-height:1}
+.stat-lab{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-top:4px}
+
+/* RSVP table */
+.rt-head,.rt-row{display:grid;grid-template-columns:1.5fr 1fr 1fr 80px;padding:11px 16px;font-size:12px;align-items:center;gap:10px}
+.rt-head{background:rgba(122,62,200,.04);font-weight:700;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);border-radius:8px 8px 0 0;border:1px solid var(--line);border-bottom:none}
+.rt-row{border:1px solid var(--line);border-top:none;background:#fff}
+.rt-row:last-child{border-radius:0 0 8px 8px}
+.rt-row .name{font-weight:600;color:var(--ink)}
+.rt-empty{padding:30px;text-align:center;color:var(--muted);font-size:13px;border:1px solid var(--line);border-top:none;border-radius:0 0 8px 8px;background:#fff}
+
+/* Sections */
+.dash-section{display:none}
+.dash-section.active{display:block}
+
+/* Section title */
+.sec-h{margin-bottom:18px}
+.sec-h h2{font-family:'Playfair Display',serif;font-size:24px;color:var(--ink);font-weight:700;margin-bottom:4px}
+.sec-h p{font-size:13px;color:var(--muted)}
+
+/* Template picker grid */
+.cat-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+.cat-tabs button{padding:8px 16px;border-radius:18px;border:1.5px solid var(--line);background:#fff;color:var(--ink2);font-size:12px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;transition:all .2s}
+.cat-tabs button:hover{border-color:var(--c2);color:var(--c2)}
+.cat-tabs button.active{background:linear-gradient(135deg,var(--c1),var(--c2),var(--c3));color:#fff;border-color:transparent}
+
+.tg{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.tc{border:1px solid var(--line);border-radius:14px;overflow:hidden;cursor:pointer;transition:all .25s;background:#fff}
+.tc:hover{transform:translateY(-3px);box-shadow:var(--shadow);border-color:var(--c2)}
+.tc.selected{border-color:var(--c2);box-shadow:0 0 0 3px rgba(122,62,200,.2)}
+.tp{height:130px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;letter-spacing:.06em;text-align:center;padding:14px;font-family:'Playfair Display',serif;font-style:italic;position:relative}
+.tb{padding:12px 14px}
+.tn{font-size:13px;font-weight:700;color:var(--ink);margin-bottom:3px}
+.td{font-size:11px;color:var(--ink2);margin-bottom:10px;line-height:1.4;min-height:30px}
+.tc-actions{display:flex;gap:6px}
+.tc-actions button{flex:1;padding:7px;border-radius:6px;font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;cursor:pointer;font-family:'Inter',sans-serif}
+.tc-preview{border:1px solid var(--line);background:transparent;color:var(--ink2)}
+.tc-preview:hover{border-color:var(--c2);color:var(--c2)}
+.tc-pick{border:none;background:linear-gradient(135deg,var(--c1),var(--c2),var(--c3));color:#fff}
+
+/* Editor form */
+.editor-form{background:#fff;border:1px solid var(--line);border-radius:14px;padding:24px;margin-bottom:14px}
+.form-section-title{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--c2);margin:18px 0 10px;padding-top:14px;border-top:1px dashed var(--line)}
+.form-section-title:first-child{margin-top:0;padding-top:0;border-top:none}
+.go-live-card{background:linear-gradient(135deg,rgba(34,197,94,.08),rgba(22,163,74,.08));border:2px solid rgba(34,197,94,.3);border-radius:14px;padding:18px;margin-top:16px;text-align:center}
+.go-live-card h4{font-size:14px;font-weight:700;color:#16a34a;margin-bottom:4px}
+.go-live-card p{font-size:12px;color:var(--ink2);margin-bottom:14px;line-height:1.5}
+.go-live-btn{padding:11px 30px;background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff;border:none;border-radius:24px;font-size:13px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;font-family:'Inter',sans-serif;box-shadow:0 4px 14px rgba(34,197,94,.3)}
+.go-live-btn:hover{transform:translateY(-1px)}
+.go-live-btn.live{background:linear-gradient(135deg,#f59e0b,#d97706)}
+
+@media(max-width:780px){
+  .layout{flex-direction:column}
+  .sidebar{width:100%;height:auto;position:static;flex-direction:row;overflow-x:auto}
+  .sb-nav{display:flex;gap:4px;flex:initial;padding:12px}
+  .sb-link{white-space:nowrap;flex-shrink:0}
+  .sb-logo,.sb-user,.sb-bot{display:none}
+  .stats{grid-template-columns:1fr 1fr 1fr}
+  .tg{grid-template-columns:1fr 1fr}
+  .content{padding:16px}
+}
+@media(max-width:480px){
+  .tg{grid-template-columns:1fr}
+  .stats .stat-num{font-size:22px}
+}
+</style>
+</head>
+<body>
+
+<div class="layout">
+
+  <aside class="sidebar">
+    <div class="sb-logo"><a href="index.html" class="brand-logo"><img src="assets/logo.png" alt="Occasi" style="height:28px;width:auto;display:block"><span class="logo-text">OCCASI</span></a></div>
+    <div class="sb-user">
+      <div class="sb-name" id="sbName">Loading…</div>
+      <div class="sb-email" id="sbEmail">—</div>
+    </div>
+    <nav class="sb-nav">
+      <a class="sb-link active" data-sec="overview"><span class="ico">🏠</span> Overview</a>
+      <a class="sb-link" data-sec="mysite"><span class="ico">🌐</span> My Site</a>
+      <a class="sb-link" data-sec="responses"><span class="ico">📋</span> RSVPs</a>
+      <a class="sb-link" data-sec="settings"><span class="ico">⚙️</span> Settings</a>
+    </nav>
+    <div class="sb-bot">
+      <div class="sb-plan">Your Plan</div>
+      <span class="sb-pill" id="sbPlan">—</span>
+      <a href="index.html" id="sbLogout" style="display:block;font-size:11px;color:var(--muted);margin-top:14px;text-decoration:none">Sign out →</a>
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <h2 id="topTitle">Overview</h2>
+      <button class="btn btn-grad btn-sm" id="goLiveTopBtn" style="display:none">View Live ↗</button>
+    </header>
+
+    <div class="content">
+
+      <!-- ─── OVERVIEW ─── -->
+      <div class="dash-section active" id="sec-overview">
+        <div class="welcome" id="welcomeBanner" style="display:none">
+          <div class="welcome-ico">🎉</div>
+          <div><strong>Welcome to Occasi!</strong><span>You're signed in. Pick a template to start building your event site.</span></div>
+        </div>
+
+        <!-- Empty state if no site yet -->
+        <div id="emptyState" class="empty-state" style="display:none">
+          <div class="empty-icon">✨</div>
+          <h2>Let's create<br><em>your event site</em></h2>
+          <p>Choose from 60 beautiful designs, customise your details, and go live in minutes.</p>
+          <button class="empty-cta" onclick="switchSection('mysite')">Choose Your Template →</button>
+        </div>
+
+        <!-- Site card if has site -->
+        <div id="siteCardWrap" style="display:none">
+          <div class="site-card">
+            <span class="site-status" id="siteStatus">Draft</span>
+            <div class="site-title" id="siteTitle">Your Event</div>
+            <div class="site-meta" id="siteMeta">—</div>
+            <div class="site-url-box">
+              <div class="site-url" id="siteUrl">—</div>
+              <button class="site-url-btn" id="copyUrlBtn">Copy</button>
+              <button class="site-url-btn primary" id="viewSiteBtn">View ↗</button>
+            </div>
+            <div class="site-actions">
+              <button class="btn btn-grad btn-sm" onclick="switchSection('mysite')">✏️ Edit Site</button>
+              <button class="btn btn-ghost btn-sm" onclick="switchSection('responses')">📋 View RSVPs</button>
+            </div>
+          </div>
+
+          <div class="stats">
+            <div class="stat"><div class="stat-num" id="statTotal">0</div><div class="stat-lab">Responses</div></div>
+            <div class="stat"><div class="stat-num" id="statGuests">0</div><div class="stat-lab">Guests</div></div>
+            <div class="stat"><div class="stat-num" id="statDays">—</div><div class="stat-lab">Days to Go</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ─── MY SITE (template picker + editor) ─── -->
+      <div class="dash-section" id="sec-mysite">
+        <!-- Template picker (shown when no site picked yet) -->
+        <div id="pickerWrap" style="display:none">
+          <div class="sec-h">
+            <h2>Choose Your <em style="font-style:italic;background:linear-gradient(135deg,var(--c1),var(--c2),var(--c3));-webkit-background-clip:text;-webkit-text-fill-color:transparent">Template</em></h2>
+            <p>Pick the design you love. You can change it later.</p>
+          </div>
+          <div class="cat-tabs" id="catTabs">
+            <button class="active" data-cat="weddings">💒 Weddings</button>
+            <button data-cat="engagements">💍 Engagements</button>
+          </div>
+          <div class="tg" id="templateGrid"></div>
+        </div>
+
+        <!-- Editor (shown when site exists) -->
+        <div id="editorWrap" style="display:none">
+          <div class="sec-h">
+            <h2>Edit Your <em style="font-style:italic;background:linear-gradient(135deg,var(--c1),var(--c2),var(--c3));-webkit-background-clip:text;-webkit-text-fill-color:transparent">Event Site</em></h2>
+            <p>Update your details. Changes save instantly when you click "Save Changes".</p>
+          </div>
+
+          <div class="editor-form">
+            <div class="form-section-title">Site Setup</div>
+            <div class="field">
+              <label>Your URL Slug (lowercase, no spaces, e.g. john-emma-2026)</label>
+              <input id="e-slug" placeholder="john-emma-2026">
+              <div style="font-size:11px;color:var(--muted);margin-top:4px">Live at: <span style="color:var(--c2)" id="ePreviewUrl">—</span></div>
+            </div>
+            <div class="field"><label>Template</label><select id="e-template"></select></div>
+
+            <div class="form-section-title">Event Details</div>
+            <div class="field-row">
+              <div class="field"><label>Partner 1 / Name</label><input id="e-p1" placeholder="e.g. John"></div>
+              <div class="field"><label>Partner 2 (optional)</label><input id="e-p2" placeholder="e.g. Emma"></div>
+            </div>
+            <div class="field-row">
+              <div class="field"><label>Event Date</label><input id="e-date" type="date"></div>
+              <div class="field"><label>RSVP Deadline</label><input id="e-deadline" type="date"></div>
+            </div>
+            <div class="field"><label>Venue</label><input id="e-venue" placeholder="e.g. The Grand Hall, London"></div>
+            <div class="field"><label>Invitation Message</label><textarea id="e-tagline" placeholder="We would be delighted for you to join us…" rows="3"></textarea></div>
+
+            <div class="form-section-title">Invite Sharing</div>
+            <p style="font-size:12px;color:var(--ink2);line-height:1.6;margin-bottom:14px">Choose how many guests each invitation link allows. You can send different links to different families with different sizes.</p>
+            <div class="field-row">
+              <div class="field">
+                <label>Default Invite Size</label>
+                <select id="e-invitesize">
+                  <option value="1">1 guest (singles)</option>
+                  <option value="2" selected>2 guests (couples)</option>
+                  <option value="3">3 guests (small family)</option>
+                  <option value="4">4 guests (family)</option>
+                  <option value="6">6 guests (extended family)</option>
+                  <option value="8">8 guests (large group)</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>Custom Size (optional)</label>
+                <input id="e-customsize" type="number" min="1" max="12" placeholder="e.g. 5">
+              </div>
+            </div>
+            <div class="share-card" style="background:linear-gradient(135deg,rgba(122,62,200,.05),rgba(160,64,216,.05));border:1px solid rgba(122,62,200,.2);border-radius:12px;padding:16px;margin-top:10px">
+              <div style="font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--c2);margin-bottom:8px">💡 Sharing Tip</div>
+              <p style="font-size:12px;color:var(--ink2);line-height:1.6;margin:0">Send <code style="background:#fff;padding:1px 5px;border-radius:3px;font-size:11px">your-url?size=4</code> to a family of 4. The form will show 4 name fields. Free QR codes coming soon!</p>
+            </div>
+
+            <div class="go-live-card" id="goLiveSection">
+              <h4 id="goLiveTitle">🚀 Ready to share with guests?</h4>
+              <p id="goLiveDesc">Click "Go Live" to make your site visible to anyone with the link. Your guests can then RSVP.</p>
+              <button class="go-live-btn" id="goLiveBtn">Go Live</button>
+            </div>
+
+            <div class="msg" id="editorMsg" style="margin-top:14px"></div>
+            <button class="btn btn-grad btn-lg" id="saveBtn" style="width:100%;margin-top:14px">💾 Save Changes</button>
+
+            <div style="text-align:center;margin-top:18px"><a href="#" id="changeTemplateBtn" style="font-size:12px;color:var(--muted);text-decoration:underline">Change template</a></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ─── RSVPs ─── -->
+      <div class="dash-section" id="sec-responses">
+        <div class="sec-h"><h2>RSVP <em style="font-style:italic;background:linear-gradient(135deg,var(--c1),var(--c2),var(--c3));-webkit-background-clip:text;-webkit-text-fill-color:transparent">Responses</em></h2><p>Real-time guest responses for your site.</p></div>
+        <div class="card">
+          <div class="card-h"><h3 id="rsvpCount">0 responses</h3><button class="btn btn-grad btn-sm" id="exportBtn">⬇ Export CSV</button></div>
+          <div class="rt-head"><span>Guest</span><span>Submitted</span><span>Group Size</span><span></span></div>
+          <div id="rsvpList"></div>
+        </div>
+      </div>
+
+      <!-- ─── SETTINGS ─── -->
+      <div class="dash-section" id="sec-settings">
+        <div class="sec-h"><h2>Account <em style="font-style:italic;background:linear-gradient(135deg,var(--c1),var(--c2),var(--c3));-webkit-background-clip:text;-webkit-text-fill-color:transparent">Settings</em></h2><p>Manage your account preferences.</p></div>
+        <div class="card">
+          <div class="field"><label>Full Name</label><input id="s-name"></div>
+          <div class="field"><label>Email</label><input id="s-email" disabled></div>
+          <button class="btn btn-grad btn-sm" id="saveSettingsBtn">Save Settings</button>
+          <div class="msg" id="settingsMsg" style="margin-top:8px"></div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<script src="js/occasi-ui.js"></script>
+<script src="js/occasi-auth.js"></script>
+<script>
+/* ─── 60 designs catalog ─── */
+var DESIGNS = {
+  weddings: [
+    {n:"Garden Romance",d:"Classic centered, floral, elegant serif.",bg:"#fdf8ec",fg:"#3d2818"},
+    {n:"Midnight Glamour",d:"Black & gold, art-deco frame.",bg:"#0d0a18",fg:"#d4a574"},
+    {n:"Rustic Barn",d:"Hand-written script, kraft paper.",bg:"#e8c8a0",fg:"#5a2810"},
+    {n:"Modern Minimal",d:"Asymmetric, bold, vertical sidebar.",bg:"#fff",fg:"#1a1a1a"},
+    {n:"Watercolor Dream",d:"Painterly pastels, glassy.",bg:"linear-gradient(135deg,#fce0e0,#e8d0e8)",fg:"#5a3848"}
+  ],
+  engagements: [
+    {n:"Diamond Glow",d:"Arched dome, glowing ring.",bg:"#fff",fg:"#1a1a3a"},
+    {n:"Starlit Night",d:"Starry sky, celestial.",bg:"#1a1438",fg:"#ffd700"},
+    {n:"Rose Gold",d:"Soft pink florals, romantic.",bg:"#fff",fg:"#8a3a2c"},
+    {n:"Champagne Toast",d:"Cream & gold, ribbon, glasses.",bg:"#fdf8e4",fg:"#5a3818"},
+    {n:"Lover\'s Lane",d:"Pink hearts that beat softly.",bg:"#fff",fg:"#a01828"}
+  ]
+};
+
+var ALL_TEMPLATES = [];
+Object.keys(DESIGNS).forEach(function(cat){ DESIGNS[cat].forEach(function(t){ALL_TEMPLATES.push(t.n)}); });
+
+var currentUser = null, siteData = null, contentData = null, allResponses = [];
+
+/* ─── Auth check + bootstrap ─── */
+function onSupabaseReady() {
+  if (!supabase || !supabase.auth) {
+    showError("Please refresh the page or try a different browser.", "Connection issue");
+    return;
+  }
+  loadDashboard();
+}
+
+async function loadDashboard() {
+  var { data: { user } } = await supabase.auth.getUser();
+  if (!user) { window.location.href = "/login.html"; return; }
+  currentUser = user;
+
+  /* Welcome banner if just signed up */
+  if (new URLSearchParams(location.search).get("welcome") === "1") {
+    document.getElementById("welcomeBanner").style.display = "flex";
+    window.history.replaceState({}, '', '/dashboard.html');
+  }
+
+  /* User info */
+  var name = currentUser.user_metadata?.full_name || currentUser.email;
+  document.getElementById("sbName").textContent = name;
+  document.getElementById("sbEmail").textContent = currentUser.email;
+  document.getElementById("s-name").value = currentUser.user_metadata?.full_name || "";
+  document.getElementById("s-email").value = currentUser.email;
+
+  /* Plan */
+  var plan = currentUser.user_metadata?.plan || "rsvp";
+  var planLabels = {rsvp:"RSVP Only", website:"Website Only", bundle:"Full Bundle"};
+  document.getElementById("sbPlan").textContent = planLabels[plan] || plan;
+
+  /* Load their site if exists */
+  await loadUserSite();
+
+  /* Build template picker */
+  buildTemplateGrid("weddings");
+  populateEditorTemplates();
+
+  /* Auto-pick template if user came from templates page with ?pick= */
+  var pickName = new URLSearchParams(location.search).get("pick");
+  if (pickName && !siteData) {
+    /* Find which category this template belongs to */
+    var foundCat = "weddings";
+    Object.keys(DESIGNS).forEach(function(cat){
+      if (DESIGNS[cat].some(function(t){ return t.n === pickName; })) foundCat = cat;
+    });
+    setTimeout(function(){
+      pickTemplate(pickName, foundCat);
+    }, 600);
+  }
+}
+
+async function loadUserSite() {
+  /* Find this user's site */
+  var { data: sites } = await supabase
+    .from("sites")
+    .select("*")
+    .eq("user_id", currentUser.id)
+    .limit(1);
+
+  if (sites && sites.length > 0) {
+    siteData = sites[0];
+    var { data: content } = await supabase
+      .from("site_content")
+      .select("*")
+      .eq("site_id", siteData.id)
+      .single();
+    contentData = content || {};
+    showSiteState();
+  } else {
+    siteData = null;
+    contentData = null;
+    showEmptyState();
+  }
+}
+
+function showEmptyState() {
+  document.getElementById("emptyState").style.display = "block";
+  document.getElementById("siteCardWrap").style.display = "none";
+  document.getElementById("pickerWrap").style.display = "block";
+  document.getElementById("editorWrap").style.display = "none";
+  document.getElementById("goLiveTopBtn").style.display = "none";
+}
+
+function showSiteState() {
+  document.getElementById("emptyState").style.display = "none";
+  document.getElementById("siteCardWrap").style.display = "block";
+  document.getElementById("pickerWrap").style.display = "none";
+  document.getElementById("editorWrap").style.display = "block";
+
+  /* Populate site card */
+  var n1 = contentData.partner_1 || "—", n2 = contentData.partner_2 || "";
+  var title = n2 ? n1 + " & " + n2 : n1;
+  document.getElementById("siteTitle").textContent = title;
+
+  var meta = [siteData.template_name];
+  if (contentData.wedding_date) meta.push(new Date(contentData.wedding_date).toLocaleDateString("en-GB",{day:"numeric",month:"long",year:"numeric"}));
+  if (contentData.venue_name) meta.push(contentData.venue_name);
+  document.getElementById("siteMeta").textContent = meta.join(" · ");
+
+  var url = window.location.origin + "/rsvp.html?site=" + (siteData.subdomain || "");
+  document.getElementById("siteUrl").textContent = url;
+
+  var status = siteData.status || "draft";
+  var statusEl = document.getElementById("siteStatus");
+  statusEl.textContent = status === "live" ? "Live" : "Draft";
+  statusEl.className = "site-status " + (status === "live" ? "live" : "draft");
+
+  /* View live button in topbar */
+  var topBtn = document.getElementById("goLiveTopBtn");
+  if (status === "live") {
+    topBtn.style.display = "inline-flex";
+    topBtn.onclick = function(){ window.open(url, "_blank"); };
+  } else {
+    topBtn.style.display = "none";
+  }
+
+  /* Populate editor form */
+  document.getElementById("e-slug").value = siteData.subdomain || "";
+  updateSlugPreview();
+  document.getElementById("e-template").value = siteData.template_name || "";
+  document.getElementById("e-p1").value = contentData.partner_1 || "";
+  document.getElementById("e-p2").value = contentData.partner_2 || "";
+  document.getElementById("e-date").value = contentData.wedding_date || "";
+  document.getElementById("e-deadline").value = contentData.rsvp_deadline || "";
+  document.getElementById("e-venue").value = contentData.venue_name || "";
+  document.getElementById("e-tagline").value = contentData.tagline || "";
+
+  /* Go live section */
+  var goBtn = document.getElementById("goLiveBtn");
+  var goTitle = document.getElementById("goLiveTitle");
+  var goDesc = document.getElementById("goLiveDesc");
+  if (status === "live") {
+    goTitle.textContent = "🟢 Your site is LIVE";
+    goDesc.textContent = "Anyone with the link can RSVP. Click below to take it offline.";
+    goBtn.textContent = "Take Offline";
+    goBtn.className = "go-live-btn live";
+  } else {
+    goTitle.textContent = "🚀 Ready to share with guests?";
+    goDesc.textContent = "Click 'Go Live' to make your site visible. Your guests can then RSVP.";
+    goBtn.textContent = "Go Live";
+    goBtn.className = "go-live-btn";
+  }
+
+  /* Load RSVPs */
+  loadResponses();
+}
+
+function buildTemplateGrid(cat) {
+  var arr = DESIGNS[cat] || [];
+  var html = arr.map(function(t){
+    return '<div class="tc"><div class="tp" style="background:'+t.bg+';color:'+t.fg+'">'+t.n+'</div><div class="tb"><div class="tn">'+t.n+'</div><div class="td">'+t.d+'</div><div class="tc-actions"><button class="tc-preview" onclick="window.open(\'rsvp.html?site=preview&template='+encodeURIComponent(t.n)+'\',\'_blank\')">Preview</button><button class="tc-pick" onclick="pickTemplate(\''+t.n.replace(/'/g,"\\'")+'\',\''+cat+'\')">Use This →</button></div></div></div>';
+  }).join('');
+  document.getElementById("templateGrid").innerHTML = html;
+}
+
+function populateEditorTemplates() {
+  var sel = document.getElementById("e-template");
+  sel.innerHTML = ALL_TEMPLATES.map(function(t){return '<option value="'+t+'">'+t+'</option>'}).join('');
+}
+
+window.pickTemplate = async function(templateName, category) {
+  var ok = await showConfirm("Use \"" + templateName + "\" as your template? You can change this later.", "Choose template");
+  if (!ok) return;
+
+  /* Generate a default slug from user name */
+  var nameSlug = (currentUser.user_metadata?.full_name || currentUser.email.split("@")[0])
+    .toLowerCase().replace(/[^a-z0-9]/g,"-").replace(/-+/g,"-").replace(/^-|-$/g,"");
+  if (!nameSlug) nameSlug = "site-" + Date.now().toString(36);
+
+  /* Determine site type from plan */
+  var plan = currentUser.user_metadata?.plan || "rsvp";
+
+  /* Create site */
+  var { data: newSite, error } = await supabase
+    .from("sites")
+    .insert({
+      user_id: currentUser.id,
+      template_name: templateName,
+      site_type: plan,
+      subdomain: nameSlug,
+      status: "draft"
+    })
+    .select()
+    .single();
+
+  if (error) {
+    showError("Could not create site: " + error.message);
+    return;
+  }
+
+  /* Create site_content */
+  await supabase.from("site_content").upsert({
+    site_id: newSite.id,
+    rsvp_template: templateName,
+    web_template: templateName
+  }, { onConflict: "site_id" });
+
+  await loadUserSite();
+  switchSection("mysite");
+};
+
+/* ─── Save edits ─── */
+document.getElementById("e-slug").addEventListener("input", function(){
+  this.value = this.value.toLowerCase().replace(/[^a-z0-9-]/g,"-");
+  updateSlugPreview();
+});
+function updateSlugPreview() {
+  var slug = document.getElementById("e-slug").value || "…";
+  document.getElementById("ePreviewUrl").textContent = window.location.origin + "/rsvp.html?site=" + slug;
+}
+
+document.getElementById("saveBtn").addEventListener("click", async function() {
+  var btn = this;
+  var slug = document.getElementById("e-slug").value.trim();
+  var template = document.getElementById("e-template").value;
+  var p1 = document.getElementById("e-p1").value.trim();
+  var p2 = document.getElementById("e-p2").value.trim();
+  var date = document.getElementById("e-date").value || null;
+  var deadline = document.getElementById("e-deadline").value || null;
+  var venue = document.getElementById("e-venue").value.trim();
+  var tagline = document.getElementById("e-tagline").value.trim();
+
+  if (!slug) return showEditMsg("Please set a URL slug.", true);
+  if (!p1) return showEditMsg("Please enter at least one name.", true);
+
+  btn.disabled = true; btn.textContent = "Saving…";
+
+  /* Update site */
+  var { error: e1 } = await supabase
+    .from("sites")
+    .update({ subdomain: slug, template_name: template })
+    .eq("id", siteData.id);
+
+  /* Update content */
+  var { error: e2 } = await supabase
+    .from("site_content")
+    .upsert({
+      site_id: siteData.id,
+      partner_1: p1,
+      partner_2: p2 || null,
+      wedding_date: date,
+      rsvp_deadline: deadline,
+      venue_name: venue || null,
+      tagline: tagline || null,
+      rsvp_template: template,
+      web_template: template
+    }, { onConflict: "site_id" });
+
+  btn.disabled = false; btn.textContent = "💾 Save Changes";
+
+  if (e1 || e2) {
+    var msg = (e1?.message || e2?.message || "Save failed");
+    if (msg.indexOf("duplicate") >= 0 || msg.indexOf("unique") >= 0) {
+      msg = "That URL is already taken — please choose another.";
+    }
+    return showEditMsg(msg, true);
+  }
+
+  showEditMsg("✓ Changes saved!", false);
+  await loadUserSite();
+});
+
+function showEditMsg(m, isErr) {
+  var el = document.getElementById("editorMsg");
+  el.textContent = m;
+  el.className = "msg " + (isErr ? "err" : "ok");
+}
+
+/* ─── Go Live toggle ─── */
+document.getElementById("goLiveBtn").addEventListener("click", async function() {
+  var btn = this;
+  var newStatus = (siteData.status === "live") ? "draft" : "live";
+
+  if (newStatus === "live") {
+    /* Validate before going live */
+    if (!contentData.partner_1) { showError("Please save your details first (at least Partner 1 / Name)."); return; }
+    if (!siteData.subdomain) { showError("Please set a URL slug first."); return; }
+  }
+
+  btn.disabled = true;
+  var { error } = await supabase
+    .from("sites")
+    .update({ status: newStatus })
+    .eq("id", siteData.id);
+  btn.disabled = false;
+
+  if (error) { showError("Could not update: " + error.message); return; }
+
+  await loadUserSite();
+  if (newStatus === "live") {
+    showModal({
+      type: "success",
+      title: "🎉 Your site is live!",
+      message: "Share the URL with your guests — they can now RSVP. You'll see responses appear here in real time.",
+      buttons: [{ label: "Got it", value: true, primary: true }]
+    });
+  } else {
+    showInfo("Your site is now offline.", "Status updated");
+  }
+});
+
+/* ─── Change template ─── */
+document.getElementById("changeTemplateBtn").addEventListener("click", function(e){
+  e.preventDefault();
+  document.getElementById("editorWrap").style.display = "none";
+  document.getElementById("pickerWrap").style.display = "block";
+});
+
+/* ─── Category tabs ─── */
+document.getElementById("catTabs").addEventListener("click", function(e){
+  if (e.target.tagName !== "BUTTON") return;
+  document.querySelectorAll("#catTabs button").forEach(function(b){b.classList.remove("active")});
+  e.target.classList.add("active");
+  buildTemplateGrid(e.target.dataset.cat);
+});
+
+/* ─── RSVP responses ─── */
+async function loadResponses() {
+  if (!siteData) return;
+  var { data } = await supabase
+    .from("rsvp_responses")
+    .select("*")
+    .eq("site_id", siteData.id)
+    .order("created_at", { ascending: false });
+  allResponses = data || [];
+  renderResponses();
+}
+
+function renderResponses() {
+  var totalPeople = allResponses.length;
+  var groups = new Set(allResponses.map(function(r){return r.created_at})).size;
+  document.getElementById("statTotal").textContent = groups;
+  document.getElementById("statGuests").textContent = totalPeople;
+  document.getElementById("rsvpCount").textContent = totalPeople + " guest" + (totalPeople !== 1 ? "s" : "") + " responded";
+
+  /* Days to go */
+  if (contentData?.wedding_date) {
+    var days = Math.ceil((new Date(contentData.wedding_date) - new Date()) / 86400000);
+    document.getElementById("statDays").textContent = days >= 0 ? days : "—";
+  }
+
+  var listEl = document.getElementById("rsvpList");
+  if (!allResponses.length) {
+    listEl.innerHTML = '<div class="rt-empty">No RSVPs yet. Share your link to get responses!</div>';
+    return;
+  }
+  listEl.innerHTML = allResponses.map(function(r){
+    return '<div class="rt-row"><span class="name">'+(r.guest_first||"")+' '+(r.guest_last||"")+'</span><span>'+new Date(r.created_at).toLocaleDateString("en-GB")+'</span><span>'+(r.invite_size||1)+'</span><span></span></div>';
+  }).join('');
+}
+
+document.getElementById("exportBtn").addEventListener("click", function(){
+  if (!allResponses.length) { showInfo("No responses yet to export.", "Nothing to download"); return; }
+  var csv = "First Name,Last Name,Group Size,Submitted\n" + allResponses.map(function(r){
+    return [r.guest_first||"", r.guest_last||"", r.invite_size||1, new Date(r.created_at).toLocaleString("en-GB")].map(function(c){return '"'+(c+'').replace(/"/g,'""')+'"'}).join(",");
+  }).join("\n");
+  var blob = new Blob([csv], {type:"text/csv"});
+  var a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "rsvps-" + (siteData.subdomain || "site") + ".csv";
+  a.click();
+});
+
+/* ─── Section navigation ─── */
+window.switchSection = function(name) {
+  document.querySelectorAll(".dash-section").forEach(function(s){s.classList.remove("active")});
+  document.querySelectorAll(".sb-link").forEach(function(l){l.classList.remove("active")});
+  document.getElementById("sec-" + name).classList.add("active");
+  document.querySelector('[data-sec="'+name+'"]')?.classList.add("active");
+  document.getElementById("topTitle").textContent = {
+    overview: "Overview", mysite: "My Site", responses: "RSVPs", settings: "Settings"
+  }[name] || "Dashboard";
+};
+
+document.querySelectorAll(".sb-link").forEach(function(link){
+  link.addEventListener("click", function(){
+    if (this.dataset.sec) switchSection(this.dataset.sec);
+  });
+});
+
+/* ─── Site card buttons ─── */
+document.getElementById("copyUrlBtn").addEventListener("click", function(){
+  var url = document.getElementById("siteUrl").textContent;
+  navigator.clipboard.writeText(url).then(function(){ showSuccess("URL copied to clipboard", "Copied"); });
+});
+document.getElementById("viewSiteBtn").addEventListener("click", function(){
+  var url = document.getElementById("siteUrl").textContent;
+  if (url && url !== "—") window.open(url, "_blank");
+});
+
+/* ─── Settings ─── */
+document.getElementById("saveSettingsBtn").addEventListener("click", async function(){
+  var name = document.getElementById("s-name").value.trim();
+  var { error } = await supabase.auth.updateUser({ data: { full_name: name } });
+  var el = document.getElementById("settingsMsg");
+  el.textContent = error ? error.message : "✓ Saved!";
+  el.className = "msg " + (error ? "err" : "ok");
+  if (!error) document.getElementById("sbName").textContent = name;
+});
+
+/* ─── Logout ─── */
+document.getElementById("sbLogout").addEventListener("click", async function(e){
+  e.preventDefault();
+  await supabase.auth.signOut();
+  window.location.href = "/index.html";
+});
+</script>
+</body>
+</html>
