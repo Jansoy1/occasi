@@ -1,0 +1,253 @@
+# Occasi — Developer Guide
+
+A practical guide for adding new templates, fields, and pages to Occasi yourself. Written for someone who has a working dev setup (Netlify + Supabase) and is comfortable editing HTML/CSS/JS by hand.
+
+---
+
+## 1. Project layout at a glance
+
+```
+occasi/
+├── index.html            Public landing page
+├── login.html            Sign in
+├── signup.html           Account creation
+├── dashboard.html        Customer dashboard (edit site, view RSVPs)
+├── rsvp.html             Guest-facing RSVP page (one file, themed by template)
+├── templates.html        Template gallery
+├── supabase-setup.sql    Initial schema — run once per project
+├── migration-v2.sql      Adds created_at + image columns
+├── js/occasi-auth.js     Loads Supabase, exposes `supabase` global
+├── css/theme.css         Shared dashboard styles (buttons, forms, etc.)
+└── assets/logo.png
+```
+
+The only two files involved in a "new template" change are **`rsvp.html`** (what guests see) and **`dashboard.html`** (the template dropdown + picker grid).
+
+---
+
+## 2. Adding a new template
+
+Suppose you want to add a **"Tropical Paradise"** template — coral pink + ocean teal.
+
+### 2a. Add a theme block in `rsvp.html`
+
+Inside the `<style>` block, just below the existing `body.theme-rosegold { … }`, paste:
+
+```css
+body.theme-tropical{
+  --bg:#e6f7f5;
+  --bg-grad-from:#e6f7f5;
+  --bg-grad-to:#ffe6dc;
+  --card:#ffffff;
+  --card-soft:#f0fbfa;
+  --text:#0f3b3a;
+  --muted:#6b8786;
+  --line:#c8e7e3;
+  --accent:#ff7a5c;
+  --accent-strong:#e85a3c;
+  --accent-soft:#fde2da;
+  --btn:#ff7a5c;
+  --btn-hover:#e85a3c;
+}
+```
+
+The complete set of CSS variables a theme can override:
+
+| Variable | What it controls |
+|---|---|
+| `--bg-grad-from` / `--bg-grad-to` | Background gradient (top / bottom) |
+| `--card` | Form card, error card, success card background |
+| `--card-soft` | Inner guest-row card background |
+| `--text` | Main text color |
+| `--muted` | Secondary text (labels, hints) |
+| `--line` | Borders + divider |
+| `--accent` | Submit button, focus ring, divider line, ornament |
+| `--accent-strong` | Names in success page, "Important" bold text |
+| `--accent-soft` | Note background, slideshow fallback tint |
+| `--btn` / `--btn-hover` | Submit button base + hover |
+| `--display-font` | Couple's name + RSVP title font |
+| `--body-font` | Everything else |
+| `--ornament` | Character shown in the centre of the divider (e.g. `"❦"`, `"✦"`, `""` for none) |
+
+### 2b. Map the template name to the theme class
+
+Inside `rsvp.html`'s `<script>`, find `TEMPLATE_THEME` and `TEMPLATE_ORNAMENT`. Add a row to each:
+
+```js
+var TEMPLATE_THEME = {
+  …,
+  "Tropical Paradise": "theme-tropical"     // ← add
+};
+var TEMPLATE_ORNAMENT = {
+  …,
+  "Tropical Paradise": "🌺"                 // ← add (or "" for none)
+};
+```
+
+### 2c. List the template in the dashboard picker
+
+Open `dashboard.html`, search for `var TEMPLATES = [`. Add a new entry:
+
+```js
+var TEMPLATES = [
+  …,
+  { n: "Tropical Paradise", d: "Coral + ocean teal, breezy & bright.",
+    bg: "linear-gradient(135deg,#e6f7f5,#ffe6dc)", fg: "#0f3b3a" }
+];
+```
+
+The `bg` and `fg` values render the colour swatch tile in the picker grid — keep them close to your real theme so customers see what they're picking.
+
+### 2d. Test it
+
+Visit `https://your-site/rsvp.html?site=preview&template=Tropical+Paradise` and confirm it renders correctly. Then add a "Try the live demo" link to `index.html` if you want it on the homepage.
+
+That's the entire flow. No build step, no compilation — refresh the page.
+
+---
+
+## 3. Adding new fields to the RSVP form
+
+If you want to capture extra info from guests (e.g. dietary requirements, song requests):
+
+### 3a. Add the column to the database
+
+```sql
+alter table public.rsvp_responses
+  add column if not exists dietary text,
+  add column if not exists song_request text;
+```
+
+### 3b. Add the input to `rsvp.html`
+
+In `renderForm()`, the `rows += …` block builds each guest row. Add fields inside the `.guest-row-card` template literal:
+
+```js
+'<div class="name-field"><label>Dietary requirements (optional)</label>' +
+'<input class="dietary" maxlength="120" autocomplete="off"></div>'
+```
+
+### 3c. Read it in the submit handler
+
+In the submit handler, after `lasts[i].value.trim()`, grab the new field:
+
+```js
+var dietary = document.querySelectorAll(".dietary")[i].value.trim();
+guests.push({ first: f, last: l, dietary: dietary });
+```
+
+And in the row map:
+
+```js
+return {
+  …,
+  dietary: g.dietary || null
+};
+```
+
+### 3d. Show it in the dashboard
+
+In `dashboard.html`'s `loadResponses`, add the field to the rendered card and to the CSV export header / row.
+
+---
+
+## 4. Adding a new page to the dashboard
+
+The dashboard uses simple show/hide sections, no router needed.
+
+1. **Add a sidebar link** — find the `<nav class="side-nav">` block and add:
+   ```html
+   <a href="#" data-section="gallery">🖼 Gallery</a>
+   ```
+2. **Add the section div** — below `<div id="page-responses">`, add:
+   ```html
+   <div class="section-page" id="page-gallery">
+     <div class="card"><h2>Gallery</h2>…</div>
+   </div>
+   ```
+3. **Handle the switch** — `switchSection()` already handles any id matching `page-<name>`, so no JS change needed.
+
+---
+
+## 5. Database tables (current state)
+
+```
+sites
+├── id              uuid pk
+├── user_id         uuid → auth.users
+├── subdomain       text unique (the URL slug)
+├── template_name   text  (matches TEMPLATES entries)
+├── status          text  ('draft' | 'live')
+└── created_at      timestamptz
+
+site_content
+├── site_id          uuid pk → sites.id
+├── partner_1        text
+├── partner_2        text
+├── wedding_date     date
+├── rsvp_deadline    date
+├── venue_name       text
+├── tagline          text
+├── invite_size_default int
+├── image_url_1      text   ← added by migration-v2
+├── image_url_2      text   ← added by migration-v2
+└── image_url_3      text   ← added by migration-v2
+
+rsvp_responses
+├── id            uuid pk
+├── site_id       uuid → sites.id
+├── guest_first   text
+├── guest_last    text
+├── attending     boolean (defaults to true, currently always true)
+├── invite_size   int     (size of the group this RSVP was submitted in)
+└── created_at    timestamptz default now()  ← added by migration-v2
+```
+
+RLS policies: customers can read/write only their own `sites`, `site_content`, and `rsvp_responses`. Guests (anon role) can insert into `rsvp_responses` and read public `sites` rows. See `supabase-setup.sql` for the exact policies.
+
+### Storage
+
+Customer-uploaded photos live in the `site-photos` Supabase Storage bucket at the path `{site_id}/photo-{slot}-{timestamp}.{ext}`. The bucket is public-read so guests can view photos on the RSVP page; uploads, replaces, and deletes are restricted by RLS to the site owner. `image_url_1/2/3` in `site_content` stores the resolved public URLs.
+
+---
+
+## 6. Deploy checklist (new template release)
+
+1. Edit `rsvp.html` (theme + map) and `dashboard.html` (TEMPLATES entry).
+2. Test locally or against staging: `?site=preview&template=Your+Template+Name`.
+3. Push to git (or drag the folder to Netlify).
+4. Hard-refresh in the browser (mobile Safari/Chrome cache aggressively — Cmd/Ctrl+Shift+R on desktop, or close and reopen the tab on mobile).
+5. If you added any DB columns: run the matching SQL in Supabase SQL Editor **before** the new front-end goes out.
+
+---
+
+## 7. Common pitfalls
+
+- **Customer says RSVPs are missing.** First click **🔄 Refresh** on the RSVPs tab. If still empty, check that the URL guests are using matches a site that account owns — multi-account confusion is the #1 cause. If you removed the Diagnose button, run this in Supabase SQL Editor:
+  ```sql
+  select s.subdomain, count(r.*) as rsvps
+  from sites s left join rsvp_responses r on r.site_id = s.id
+  where s.user_id = (select id from auth.users where email = '<customer-email>')
+  group by s.subdomain;
+  ```
+- **Image won't show on the RSVP page.** Photos upload through the dashboard's photo slots which read from the customer's device — direct URLs are no longer needed. If a customer's upload fails, check (a) Supabase Storage has a `site-photos` bucket with public read, (b) `migration-v2.sql` was run so the RLS policies exist, (c) the file is under 10 MB.
+- **Slug already taken.** Slugs are globally unique across all customers. Append a year or short suffix.
+
+---
+
+## 8. Where things live (quick reference)
+
+| Want to change… | Open… | Search for… |
+|---|---|---|
+| Homepage copy | `index.html` | `hero` |
+| Pricing tiers | `index.html` | `pricing` |
+| Sign-up flow | `signup.html` | `signUpBtn` |
+| Customer dashboard layout | `dashboard.html` | `<aside class="sidebar">` |
+| What guests see | `rsvp.html` | `renderForm()` |
+| Template colours | `rsvp.html` | `body.theme-` |
+| Template list (picker) | `dashboard.html` | `var TEMPLATES =` |
+| RSVP list rendering | `dashboard.html` | `loadResponses` |
+| CSV export columns | `dashboard.html` | `var csv =` |
+| Database schema | `supabase-setup.sql` | (whole file) |
+
+Happy building.

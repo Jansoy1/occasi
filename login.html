@@ -1,0 +1,775 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>RSVP</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400&family=Cormorant+Garamond:wght@400;500;600&family=Inter:wght@400;500;600&family=Cinzel:wght@400;600&family=Dancing+Script:wght@500;700&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  /* Garden Romance defaults — cream & sage */
+  --bg:#faf7f2;
+  --bg-grad-from:#faf7f2;
+  --bg-grad-to:#f3eee6;
+  --card:#ffffff;
+  --card-soft:#fafaf7;
+  --text:#2f2f2f;
+  --muted:#7a7a7a;
+  --line:#e6dccf;
+  --accent:#8fa89b;
+  --accent-strong:#5a7d6c;
+  --accent-soft:#eef3f0;
+  --btn:#8fa89b;
+  --btn-hover:#7d9788;
+  --shadow:0 18px 45px rgba(0,0,0,.08);
+  --shadowSoft:0 12px 30px rgba(0,0,0,.06);
+  --body-font:"Playfair Display","Cormorant Garamond",Georgia,serif;
+  --display-font:"Playfair Display",Georgia,serif;
+  --ornament:"❦";
+}
+
+/* === Midnight Glamour === deep navy + warm gold, dramatic art-deco */
+body.theme-midnight{
+  --bg:#0d0a18;
+  --bg-grad-from:#0d0a18;
+  --bg-grad-to:#1a1428;
+  --card:#1a1428;
+  --card-soft:#221a32;
+  --text:#f5edd6;
+  --muted:#9a8c6e;
+  --line:#2a2240;
+  --accent:#d4a574;
+  --accent-strong:#e8c089;
+  --accent-soft:#251c38;
+  --btn:#d4a574;
+  --btn-hover:#c9974f;
+  --shadow:0 18px 45px rgba(0,0,0,.4);
+  --shadowSoft:0 12px 30px rgba(0,0,0,.3);
+  --display-font:"Cinzel","Playfair Display",Georgia,serif;
+}
+
+/* === Rustic Barn === warm browns & cream, cozy and natural */
+body.theme-rustic{
+  --bg:#fdf8ec;
+  --bg-grad-from:#fdf8ec;
+  --bg-grad-to:#f0e5cd;
+  --card:#ffffff;
+  --card-soft:#fbf3df;
+  --text:#3d2914;
+  --muted:#8a7560;
+  --line:#d9c4a8;
+  --accent:#8b5a3c;
+  --accent-strong:#6b4329;
+  --accent-soft:#f0e5d2;
+  --btn:#8b5a3c;
+  --btn-hover:#74482e;
+  --display-font:"Dancing Script","Playfair Display",cursive;
+}
+
+/* === Modern Minimal === gallery white, sharp typography, no ornament */
+body.theme-modern{
+  --bg:#ffffff;
+  --bg-grad-from:#ffffff;
+  --bg-grad-to:#fafaf7;
+  --card:#ffffff;
+  --card-soft:#f7f7f4;
+  --text:#1a1a1a;
+  --muted:#888888;
+  --line:#e0e0dc;
+  --accent:#1a1a1a;
+  --accent-strong:#000000;
+  --accent-soft:#f0f0ed;
+  --btn:#1a1a1a;
+  --btn-hover:#000000;
+  --shadow:0 8px 30px rgba(0,0,0,.06);
+  --shadowSoft:0 4px 16px rgba(0,0,0,.04);
+  --body-font:"Inter",system-ui,sans-serif;
+  --display-font:"Inter",system-ui,sans-serif;
+  --ornament:"";
+}
+body.theme-modern .couple h2,
+body.theme-modern .rsvp-title{letter-spacing:-.02em;font-weight:700}
+body.theme-modern .divider::after{padding:0;width:8px;height:8px;background:var(--accent);border-radius:50%;content:""}
+
+/* === Rose Gold === soft blush, dusty rose, romantic */
+body.theme-rosegold{
+  --bg:#fce0d8;
+  --bg-grad-from:#fce0d8;
+  --bg-grad-to:#f8c8c0;
+  --card:#fffafa;
+  --card-soft:#fdeae5;
+  --text:#5a2c2c;
+  --muted:#8b6e6e;
+  --line:#f0d0c8;
+  --accent:#b8758a;
+  --accent-strong:#8a3a2c;
+  --accent-soft:#fce5e0;
+  --btn:#b8758a;
+  --btn-hover:#9d5c73;
+}
+
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  font-family:var(--body-font);
+  color:var(--text);
+  background:
+    radial-gradient(rgba(0,0,0,.02) 1px,transparent 0),
+    linear-gradient(180deg,var(--bg-grad-from),var(--bg-grad-to));
+  background-size:18px 18px,100%;
+  min-height:100vh;
+}
+
+/* ---------- States ---------- */
+#loader,#err,#rsvp,#success{display:none}
+#loader.show,#rsvp.show{display:block}
+#err.show,#success.show{
+  display:flex;
+  min-height:100vh;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  padding:24px;
+}
+#loader.show{
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.loader-spin{
+  width:42px;height:42px;
+  border:3px solid var(--line);
+  border-top-color:var(--accent);
+  border-radius:50%;
+  animation:spin 1s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.err-card,.success-card{
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:26px;
+  padding:48px 32px;
+  max-width:520px;
+  width:100%;
+  box-shadow:var(--shadow);
+  color:var(--text);
+}
+.err-icon{font-size:42px;color:var(--accent);margin-bottom:14px}
+.err-title{font-size:30px;margin-bottom:10px;font-family:var(--display-font)}
+.err-msg{color:var(--muted);font-family:'Inter',sans-serif;font-size:14px;line-height:1.6}
+
+.success-card h1{font-size:36px;margin:0 0 14px;font-family:var(--display-font)}
+.success-card p{color:var(--muted);line-height:1.6;font-family:'Inter',sans-serif;font-size:14px}
+.success-names{
+  font-size:20px;
+  margin:20px 0;
+  color:var(--accent-strong);
+  font-family:var(--display-font);
+  line-height:1.5;
+}
+.success-footer{
+  margin-top:28px;
+  font-size:13px;
+  color:var(--muted);
+  font-family:'Inter',sans-serif;
+}
+
+/* ---------- Preview banner ---------- */
+.preview-banner{
+  position:fixed;top:0;left:0;right:0;
+  background:#fff4e6;
+  border-bottom:1px solid #f59e0b;
+  color:#b45309;
+  font-family:'Inter',sans-serif;
+  font-size:12px;
+  text-align:center;
+  padding:8px 14px;
+  z-index:100;
+  display:none;
+}
+
+/* ---------- Main layout ---------- */
+.wrap{
+  max-width:1120px;
+  margin:auto;
+  padding:28px 16px 80px;
+}
+.layout{
+  display:grid;
+  grid-template-columns:1.05fr .95fr;
+  gap:24px;
+  align-items:start;
+}
+
+.fade-in{animation:fadeInUp .9s ease both}
+@keyframes fadeInUp{
+  from{opacity:0;transform:translateY(18px)}
+  to{opacity:1;transform:none}
+}
+
+/* ---------- Slideshow ---------- */
+.slideshow{
+  position:relative;
+  height:clamp(280px,46vw,560px);
+  border-radius:26px;
+  overflow:hidden;
+  border:1px solid var(--line);
+  box-shadow:var(--shadow);
+  background:linear-gradient(135deg,var(--accent-soft),var(--bg-grad-to));
+}
+.slide{
+  position:absolute;inset:0;
+  width:100%;height:100%;
+  object-fit:cover;
+  opacity:0;
+  transform:scale(1.03);
+  transition:opacity .9s ease,transform 1.2s ease;
+}
+.slide.active{opacity:1;transform:scale(1)}
+
+.slideshow-fallback{
+  position:absolute;inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:var(--accent);
+  font-size:72px;
+  font-family:var(--display-font);
+  text-shadow:0 4px 18px rgba(0,0,0,.12);
+  background:
+    radial-gradient(circle at 30% 25%,var(--accent-soft),transparent 55%),
+    radial-gradient(circle at 70% 75%,rgba(255,255,255,.15),transparent 55%),
+    linear-gradient(135deg,var(--bg-grad-from) 0%,var(--accent-soft) 50%,var(--bg-grad-to) 100%);
+}
+
+/* ---------- Panel ---------- */
+.panel{padding-top:4px}
+.couple h2{
+  margin:0;
+  font-size:clamp(34px,5vw,46px);
+  font-weight:500;
+  line-height:1.1;
+  font-family:var(--display-font);
+}
+.invite-text{
+  margin-top:12px;
+  color:var(--muted);
+  font-family:'Inter',sans-serif;
+  font-size:14px;
+  line-height:1.6;
+}
+.invite-text strong{
+  color:var(--text);
+  font-family:'Playfair Display',serif;
+  font-weight:500;
+}
+
+.divider{
+  height:1px;
+  background:linear-gradient(to right,transparent,var(--accent),transparent);
+  margin:24px 0;
+  position:relative;
+}
+.divider::after{
+  content:var(--ornament);
+  position:absolute;left:50%;top:50%;
+  transform:translate(-50%,-50%);
+  background:var(--bg-grad-from);
+  padding:0 12px;
+  color:var(--accent);
+  font-size:14px;
+}
+
+.rsvp-title{font-size:32px;margin:0;font-weight:500;font-family:var(--display-font)}
+.rsvp-sub{
+  color:var(--muted);
+  font-family:'Inter',sans-serif;
+  font-size:14px;
+  margin:6px 0 0;
+}
+
+.note{
+  margin-top:16px;
+  padding:14px 16px;
+  background:var(--accent-soft);
+  border:1px solid var(--line);
+  border-radius:16px;
+  font-family:'Inter',sans-serif;
+  font-size:13px;
+  line-height:1.55;
+  color:var(--text);
+}
+.note strong{color:var(--accent-strong)}
+
+/* ---------- Form card ---------- */
+.card{
+  margin-top:18px;
+  background:var(--card);
+  border-radius:22px;
+  border:1px solid var(--line);
+  box-shadow:var(--shadowSoft);
+}
+.card .inner{padding:20px}
+
+.meta{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  justify-content:space-between;
+  margin-bottom:16px;
+}
+.pill{
+  padding:9px 14px;
+  border-radius:999px;
+  border:1px solid var(--line);
+  font-family:'Inter',sans-serif;
+  font-size:12px;
+  color:var(--muted);
+  background:var(--card);
+}
+.pill strong{color:var(--text);margin-left:4px}
+
+#guestsContainer{
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+}
+.guest-row-card{
+  border:1px solid var(--line);
+  border-radius:18px;
+  padding:16px;
+  background:var(--card-soft);
+}
+.guest-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  font-family:'Inter',sans-serif;
+  font-size:12px;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  color:var(--muted);
+  margin-bottom:10px;
+}
+.guest-header strong{color:var(--accent-strong);font-weight:600}
+
+.name-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+}
+.name-field label{
+  display:block;
+  font-family:'Inter',sans-serif;
+  font-size:11px;
+  color:var(--muted);
+  margin-bottom:4px;
+  letter-spacing:.04em;
+}
+.name-field input{
+  width:100%;
+  padding:12px 14px;
+  border-radius:12px;
+  border:1px solid var(--line);
+  font-family:var(--display-font);
+  font-size:15px;
+  color:var(--text);
+  background:var(--card);
+  transition:border-color .2s,box-shadow .2s;
+}
+.name-field input:focus{
+  outline:none;
+  border-color:var(--accent);
+  box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 30%,transparent);
+}
+
+.submit-btn{
+  width:100%;
+  padding:15px;
+  border-radius:16px;
+  border:none;
+  background:var(--btn);
+  color:#fff;
+  font-family:'Inter',sans-serif;
+  font-weight:600;
+  font-size:14px;
+  letter-spacing:.1em;
+  text-transform:uppercase;
+  margin-top:16px;
+  cursor:pointer;
+  transition:background .2s,transform .1s;
+}
+.submit-btn:hover:not(:disabled){background:var(--btn-hover)}
+.submit-btn:active{transform:scale(.99)}
+.submit-btn:disabled{opacity:.65;cursor:not-allowed}
+
+.spinner{
+  width:14px;height:14px;
+  border:2px solid rgba(255,255,255,.4);
+  border-top-color:#fff;
+  border-radius:50%;
+  display:inline-block;
+  animation:spin .8s linear infinite;
+  margin-right:8px;
+  vertical-align:middle;
+}
+
+.form-msg{
+  margin-top:12px;
+  font-family:'Inter',sans-serif;
+  font-size:13px;
+  text-align:center;
+}
+.form-msg.err{color:#b45a5a}
+.form-msg.ok{color:#5a7d6c}
+
+/* ---------- Responsive ---------- */
+@media(max-width:920px){
+  .layout{grid-template-columns:1fr;gap:18px}
+  .slideshow{height:clamp(220px,55vw,360px)}
+}
+@media(max-width:560px){
+  .wrap{padding:18px 12px 60px}
+  .name-grid{grid-template-columns:1fr}
+  .card .inner{padding:16px}
+  .err-card,.success-card{padding:36px 22px}
+  .couple h2{font-size:32px}
+}
+</style>
+</head>
+
+<body>
+
+<div class="preview-banner" id="previewBanner">⚠️ Preview mode — submissions are not saved.</div>
+
+<!-- LOADING STATE -->
+<div id="loader" class="show">
+  <div class="loader-spin"></div>
+</div>
+
+<!-- ERROR STATE -->
+<div id="err">
+  <div class="err-card">
+    <div class="err-icon">❦</div>
+    <div class="err-title">Invitation Not Found</div>
+    <div class="err-msg" id="errMsg">This RSVP link is invalid or no longer available.</div>
+  </div>
+</div>
+
+<!-- RSVP FORM STATE -->
+<div id="rsvp">
+  <div class="wrap">
+    <div class="layout">
+
+      <div class="slideshow fade-in" id="slideshow">
+        <div class="slideshow-fallback" id="slideshowFallback">❦</div>
+      </div>
+
+      <div class="panel fade-in">
+        <div class="couple">
+          <h2 id="coupleNames">—</h2>
+          <p class="invite-text">
+            You are warmly invited to celebrate<br>
+            <strong id="celebrationText">our special day</strong>
+          </p>
+        </div>
+
+        <div class="divider"></div>
+
+        <h1 class="rsvp-title">RSVP</h1>
+        <p class="rsvp-sub">Please confirm your attendance <strong>ASAP</strong>.</p>
+
+        <div class="note">
+          <strong>Important:</strong> If you do not RSVP, we will assume you are unable to attend.<br>
+          You may leave unused guest rows blank.
+        </div>
+
+        <div class="card">
+          <div class="inner">
+            <div class="meta">
+              <div class="pill">Invite Size: <strong id="partySizeLabel">—</strong></div>
+              <div class="pill">Guests Entered: <strong id="guestCount">0</strong></div>
+            </div>
+
+            <form id="rsvpForm">
+              <div id="guestsContainer"></div>
+              <button class="submit-btn" id="submitBtn" type="submit">Submit RSVP</button>
+              <div id="formMsg" class="form-msg"></div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- SUCCESS STATE -->
+<div id="success">
+  <div class="success-card">
+    <h1>Thank You 💍</h1>
+    <p>Your RSVP has been received.</p>
+    <div class="success-names" id="successNames"></div>
+    <p>We look forward to celebrating with you!</p>
+    <div class="success-footer">love,<br><strong id="successCouple">the happy couple</strong></div>
+  </div>
+</div>
+
+<script src="js/occasi-auth.js"></script>
+<script>
+/* ============================================================
+   Occasi RSVP page — elegant default
+   Reads slug from ?site=, optional party size from ?size=
+   Submits to Supabase rsvp_responses (attending=true by default)
+   ============================================================ */
+
+var siteData = null;
+var contentData = null;
+var inviteSize = 2;
+
+(function() {
+  var slug = new URLSearchParams(location.search).get("site");
+  if (slug === "preview") bootstrap();
+})();
+
+function onSupabaseReady() {
+  var slug = new URLSearchParams(location.search).get("site");
+  if (slug !== "preview") bootstrap();
+}
+
+async function bootstrap() {
+  var params = new URLSearchParams(location.search);
+  var slug = params.get("site");
+  var sizeParam = parseInt(params.get("size"));
+  if (sizeParam && sizeParam >= 1 && sizeParam <= 20) inviteSize = sizeParam;
+
+  if (slug === "preview") {
+    document.getElementById("previewBanner").style.display = "block";
+    document.body.style.paddingTop = "44px";
+    var tplFromUrl = params.get("template") || "Garden Romance";
+    siteData = { id: "preview", status: "live", template_name: tplFromUrl };
+    contentData = {
+      partner_1: "Aaron",
+      partner_2: "Kiran",
+      tagline: "Aaron & Kiran's Wedding Reception",
+      invite_size_default: 2
+    };
+    if (!sizeParam) inviteSize = contentData.invite_size_default || 2;
+    return renderForm();
+  }
+
+  if (!slug) return showError("No invitation specified.");
+  if (typeof supabase === "undefined" || !supabase) {
+    return showError("Service unavailable. Please refresh the page.");
+  }
+
+  var { data: site, error: siteErr } = await supabase
+    .from("sites").select("*").eq("subdomain", slug).maybeSingle();
+
+  if (siteErr || !site) return showError("This invitation could not be found.");
+  if (site.status !== "live") return showError("This invitation is not currently active.");
+
+  siteData = site;
+
+  var { data: content } = await supabase
+    .from("site_content").select("*").eq("site_id", site.id).maybeSingle();
+  contentData = content || {};
+
+  if (!sizeParam && contentData.invite_size_default) {
+    inviteSize = contentData.invite_size_default;
+  }
+
+  renderForm();
+}
+
+function renderForm() {
+  /* Apply theme class based on the customer's chosen template */
+  var TEMPLATE_THEME = {
+    "Garden Romance":   "theme-garden",
+    "Midnight Glamour": "theme-midnight",
+    "Rustic Barn":      "theme-rustic",
+    "Modern Minimal":   "theme-modern",
+    "Rose Gold":        "theme-rosegold"
+  };
+  var TEMPLATE_ORNAMENT = {
+    "Garden Romance":   "❦",
+    "Midnight Glamour": "✦",
+    "Rustic Barn":      "❀",
+    "Modern Minimal":   "",
+    "Rose Gold":        "❀"
+  };
+  var tplName = (siteData && siteData.template_name) || "Garden Romance";
+  document.body.className = TEMPLATE_THEME[tplName] || "theme-garden";
+  document.getElementById("slideshowFallback").textContent = TEMPLATE_ORNAMENT[tplName] || "❦";
+
+  var n1 = contentData.partner_1 || "";
+  var n2 = contentData.partner_2 || "";
+  var couple = (n1 && n2) ? (n1 + " & " + n2) : (n1 || n2 || "Our Wedding");
+  document.getElementById("coupleNames").textContent = couple;
+
+  var celebration = contentData.tagline
+    || ((n1 && n2) ? (n1 + " & " + n2 + "'s Wedding") : "our special day");
+  document.getElementById("celebrationText").textContent = celebration;
+
+  document.getElementById("successCouple").textContent = couple;
+  document.title = couple + " — RSVP";
+
+  /* Slideshow images — use image_url_1/2/3 if customer has them; fallback otherwise */
+  var imgs = [contentData.image_url_1, contentData.image_url_2, contentData.image_url_3]
+    .filter(function(u) { return u && typeof u === "string" && u.trim(); });
+  setupSlideshow(imgs);
+
+  /* Build guest rows */
+  var rows = "";
+  for (var i = 1; i <= inviteSize; i++) {
+    rows +=
+      '<div class="guest-row-card">' +
+        '<div class="guest-header"><strong>Guest ' + i + '</strong></div>' +
+        '<div class="name-grid">' +
+          '<div class="name-field"><label>First name</label><input class="gf" maxlength="40" autocomplete="off"></div>' +
+          '<div class="name-field"><label>Last name</label><input class="gl" maxlength="40" autocomplete="off"></div>' +
+        '</div>' +
+      '</div>';
+  }
+  document.getElementById("guestsContainer").innerHTML = rows;
+  document.getElementById("partySizeLabel").textContent = inviteSize;
+
+  document.getElementById("guestsContainer").addEventListener("input", updateGuestCount);
+
+  switchState("rsvp");
+}
+
+function setupSlideshow(imgs) {
+  var box = document.getElementById("slideshow");
+  var fallback = document.getElementById("slideshowFallback");
+
+  if (!imgs.length) {
+    fallback.style.display = "flex";
+    return;
+  }
+
+  fallback.style.display = "none";
+  imgs.forEach(function(src, i) {
+    var img = document.createElement("img");
+    img.className = "slide" + (i === 0 ? " active" : "");
+    img.src = src;
+    img.alt = "";
+    box.appendChild(img);
+  });
+
+  if (imgs.length > 1) {
+    var idx = 0;
+    var slides = box.querySelectorAll(".slide");
+    setInterval(function() {
+      slides[idx].classList.remove("active");
+      idx = (idx + 1) % slides.length;
+      slides[idx].classList.add("active");
+    }, 6000);
+  }
+}
+
+function updateGuestCount() {
+  var firsts = document.querySelectorAll(".gf");
+  var lasts = document.querySelectorAll(".gl");
+  var c = 0;
+  for (var i = 0; i < firsts.length; i++) {
+    if (firsts[i].value.trim() && lasts[i].value.trim()) c++;
+  }
+  document.getElementById("guestCount").textContent = c;
+}
+
+document.getElementById("rsvpForm").addEventListener("submit", async function(e) {
+  e.preventDefault();
+  var btn = document.getElementById("submitBtn");
+  var msg = document.getElementById("formMsg");
+  msg.textContent = "";
+  msg.className = "form-msg";
+
+  var firsts = document.querySelectorAll(".gf");
+  var lasts = document.querySelectorAll(".gl");
+  var guests = [];
+
+  for (var i = 0; i < firsts.length; i++) {
+    var f = firsts[i].value.trim();
+    var l = lasts[i].value.trim();
+    if (!f && !l) continue;
+    if (!f || !l) {
+      msg.textContent = "❌ Please complete both first and last name for each guest.";
+      msg.className = "form-msg err";
+      return;
+    }
+    guests.push({ first: f, last: l });
+  }
+
+  if (!guests.length) {
+    msg.textContent = "❌ Please enter at least one guest.";
+    msg.className = "form-msg err";
+    return;
+  }
+
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>Submitting…';
+
+  if (siteData.id === "preview") {
+    setTimeout(function() { showSuccess(guests); }, 600);
+    return;
+  }
+
+  var rows = guests.map(function(g) {
+    return {
+      site_id: siteData.id,
+      guest_first: g.first,
+      guest_last: g.last,
+      attending: true,
+      invite_size: guests.length
+    };
+  });
+
+  var { data, error } = await supabase.from("rsvp_responses").insert(rows).select();
+
+  if (error) {
+    console.error("[Occasi] RSVP submit error:", error);
+    btn.disabled = false;
+    btn.textContent = "Submit RSVP";
+    msg.textContent = "❌ Could not submit: " + error.message;
+    msg.className = "form-msg err";
+    return;
+  }
+
+  showSuccess(guests);
+});
+
+function switchState(name) {
+  ["loader", "err", "rsvp", "success"].forEach(function(id) {
+    document.getElementById(id).classList.remove("show");
+  });
+  document.getElementById(name).classList.add("show");
+}
+
+function showError(text) {
+  document.getElementById("errMsg").textContent = text;
+  switchState("err");
+}
+
+function showSuccess(guests) {
+  document.getElementById("successNames").innerHTML =
+    guests.map(function(g) { return escapeHtml(g.first + " " + g.last); }).join("<br>");
+  switchState("success");
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function escapeHtml(s) {
+  return String(s == null ? "" : s).replace(/[&<>"']/g, function(c) {
+    return { "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[c];
+  });
+}
+</script>
+</body>
+</html>

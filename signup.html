@@ -1,0 +1,85 @@
+# Occasi — Fresh Build
+
+Clean, minimal rebuild. Fixes three issues from your last session:
+
+1. ✅ **RSVP submission failing** → Added explicit `to anon, authenticated` insert policy on `rsvp_responses` so guests (not logged in) can submit.
+2. ✅ **`?size=N` in URL not working** → `rsvp.html` reads `URLSearchParams.get("size")`, clamps 1-20, and takes precedence over the dashboard default.
+3. ✅ **QR codes as PNG + downloadable** → Dashboard uses `qrserver.com` (free API, PNG output) + fetch-to-blob to force download. Generates any size you choose.
+
+---
+
+## 🚀 Deployment (3 steps)
+
+### Step 1: Run the SQL
+1. Go to your Supabase project (`drufgtnbmpkjgugyootz`)
+2. Open **SQL Editor → New Query**
+3. Paste the **entire contents** of `supabase-setup.sql`
+4. Click **Run**
+5. Check the last row of output — `auth_users` and `public_users` should match
+
+### Step 2: Verify auth settings
+In Supabase: **Authentication → URL Configuration**
+- **Site URL** = your Netlify URL (e.g. `https://beautiful-gumdrop-38ca06.netlify.app`)
+- **Redirect URLs** — include the same URL
+
+### Step 3: Deploy to Netlify
+1. Open the `occasi-platform` folder
+2. Select the **contents** of the folder (NOT the folder itself)
+3. Drag onto Netlify deploy zone
+4. Wait ~30 seconds
+
+---
+
+## ✅ Test checklist
+
+After deploying, in **incognito mode**:
+
+| Test | What to do | Expected |
+|---|---|---|
+| **Signup** | Go to `/signup.html`, create account | Redirects to dashboard |
+| **Template** | Click "Choose Template" → pick one | Editor appears |
+| **Save details** | Fill names, date, venue → Save | "✓ Saved!" |
+| **Custom URL** | Set qrSize=4, see URL update | URL ends with `?size=4` |
+| **Generate QR** | Click "Generate QR Code" | QR image appears |
+| **Download QR** | Click "Download PNG" | PNG file downloads |
+| **Go Live** | Click "Go Live" | Status becomes "Live" |
+| **Guest RSVP** | Open URL in different browser/incognito | Form shows 4 guest rows |
+| **Submit RSVP** | Fill names → Submit | "Wonderful!" success page |
+| **Dashboard view** | Back in dashboard → RSVPs tab | Submissions appear |
+
+---
+
+## 📂 File structure
+
+```
+occasi/
+├── index.html            ← Homepage
+├── signup.html           ← Create account (RSVP £9 / Website £19)
+├── login.html            ← Sign in
+├── dashboard.html        ← Customer self-service (URL+QR+RSVPs)
+├── rsvp.html             ← Guest-facing form (5 designs)
+├── templates.html        ← Browse templates
+├── supabase-setup.sql    ← Run this in Supabase SQL Editor
+├── css/theme.css         ← Shared styles
+└── js/occasi-auth.js     ← Supabase client + auth
+```
+
+---
+
+## 🎨 The 5 templates
+
+- 🌿 **Garden Romance** — Cream paper, sage green, Italiana + Allura fonts
+- ✨ **Midnight Glamour** — Black/gold, Cinzel typography
+- 🌾 **Rustic Barn** — Warm browns, Allura script
+- ⬛ **Modern Minimal** — Clean white, asymmetric, Playfair 200wt
+- 🌹 **Rose Gold** — Soft pink, romantic
+
+Try a live demo without signing up: `/rsvp.html?site=preview&template=Garden+Romance`
+
+---
+
+## ⚠️ Important
+
+- Email confirmation: if Supabase requires it, signup won't auto-login. Either disable email confirmation in **Authentication → Sign In Methods → Email**, or check the inbox.
+- Supabase project must not be **paused** — visit your dashboard occasionally to keep it active.
+- The current Supabase project is `drufgtnbmpkjgugyootz`. Keys are in `js/occasi-auth.js`.
